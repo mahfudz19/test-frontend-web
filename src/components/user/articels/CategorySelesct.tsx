@@ -3,7 +3,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const Category = () => {
+const Category = ({
+  handleChangeClient,
+}: {
+  handleChangeClient?: (value: string) => void;
+}) => {
   type ICategory = {
     data: {
       id: string;
@@ -55,8 +59,12 @@ const Category = () => {
   return (
     <>
       <select
-        onChange={(e) => handleChange(e.target.value)}
-        className="border p-2 w-full mb-4"
+        onChange={(e) =>
+          handleChangeClient
+            ? handleChangeClient(e.target.value)
+            : handleChange(e.target.value)
+        }
+        className="border p-2 w-full h-full mb-4"
       >
         <option value="">Semua Kategori</option>
         {categories.map((cat) => (

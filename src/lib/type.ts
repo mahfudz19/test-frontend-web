@@ -25,8 +25,21 @@ export interface Article {
 }
 
 export interface GetArticle {
-    "data": Article[],
-    "total": number
-    "page": number
-    "limit": number
+  data: Article[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface ArticleInput {
+  userId: string;
+  categoryId: string;
+  title: string;
+  content: string;
+  imageUrl?: string;
+}
+
+export interface CategoryInput {
+  userId: string;
+  name: string;
 }
