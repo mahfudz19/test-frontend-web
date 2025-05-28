@@ -1,6 +1,5 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import React from "react";
 
 function PaginateArticels({
   totalPage,
@@ -15,11 +14,8 @@ function PaginateArticels({
   const handleChange = (value: number) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value <= 1) {
-      params.delete("page"); // ⛔ hapus query jika page = 1
-    } else {
-      params.set("page", `${value}`);
-    }
+    if (value <= 1) params.delete("page");
+    else params.set("page", `${value}`);
 
     router.push(`?${params.toString()}`);
   };

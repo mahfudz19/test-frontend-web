@@ -2,12 +2,13 @@ import { getArticleById, getArticles } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 
-type Props = {
-  params: { id: string };
-};
-
-const ArticleDetailPage = async ({ params }: Props) => {
-  const article = await getArticleById(params.id);
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const article = await getArticleById(id);
 
   const { data: otherArticles } = await getArticles({
     category: article.category.id,
@@ -64,6 +65,4 @@ const ArticleDetailPage = async ({ params }: Props) => {
       </section>
     </main>
   );
-};
-
-export default ArticleDetailPage;
+}

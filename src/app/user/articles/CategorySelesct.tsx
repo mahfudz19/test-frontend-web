@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Category = ({
   handleChangeClient,
@@ -57,23 +57,21 @@ const Category = ({
   };
 
   return (
-    <>
-      <select
-        onChange={(e) =>
-          handleChangeClient
-            ? handleChangeClient(e.target.value)
-            : handleChange(e.target.value)
-        }
-        className="border p-2 w-full h-full mb-4"
-      >
-        <option value="">Semua Kategori</option>
-        {categories.map((cat) => (
-          <option key={cat.id} value={cat.id}>
-            {cat.name}
-          </option>
-        ))}
-      </select>
-    </>
+    <select
+      onChange={(e) =>
+        handleChangeClient
+          ? handleChangeClient(e.target.value)
+          : handleChange(e.target.value)
+      }
+      className="border p-2 w-full h-full mb-4"
+    >
+      <option value="">Semua Kategori</option>
+      {categories.map((cat) => (
+        <option key={cat.id} value={cat.id}>
+          {cat.name}
+        </option>
+      ))}
+    </select>
   );
 };
 

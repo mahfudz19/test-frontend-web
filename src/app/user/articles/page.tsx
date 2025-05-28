@@ -1,22 +1,24 @@
-import Category from "@/components/user/articels/CategorySelesct";
-import PaginateArticels from "@/components/user/articels/PaginateArticels";
+import Category from "@/app/user/articles/CategorySelesct";
+import PaginateArticels from "@/app/user/articles/PaginateArticels";
 import { getArticles } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
-  searchParams: { category?: string; page?: string };
+  searchParams: Promise<{ category?: string; page?: string }>;
 };
 
-const UserArticlesPage = async ({ searchParams }: Props) => {
+export default async function UserArticlesPage({ searchParams }: Props) {
+  const { category, page } = await searchParams;
+
   const {
     data: articles,
     limit,
-    page,
+    page: curentPage,
     total,
   } = await getArticles({
-    category: searchParams.category,
-    page: searchParams.page,
+    category: category,
+    page: page,
     limit: "5",
   });
 
@@ -54,12 +56,11 @@ const UserArticlesPage = async ({ searchParams }: Props) => {
       </ul>
 
       {/* Pagination Controls */}
+
       <PaginateArticels
         totalPage={Math.ceil(total / limit)}
-        curentPage={page}
+        curentPage={curentPage}
       />
     </main>
   );
-};
-
-export default UserArticlesPage;
+}
