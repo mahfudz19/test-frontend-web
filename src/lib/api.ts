@@ -1,24 +1,34 @@
 // src/lib/api.ts
-import axios from 'axios';
-import { Article, dummyArticles } from './dummy-articles';
+import { getURLParams } from "@/components/util/formats";
+import { GetArticle } from "./type";
+const API_HOST = process.env.API_HOST || "https://test-fe.mysellerpintar.com";
 
-const api = axios.create({
-  baseURL: 'https://test-fe.mysellerpintar.com/api',
-  timeout: 5000,
-});
+export async function getArticles(q?: {
+  page?: string;
+  category?: string;
+  limit?: string;
+}) {
+  const res = await fetch(`${API_HOST}/api/articles?${getURLParams(q ?? {})}`, {
+    cache: "no-store", // tidak cache
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const articles: GetArticle = await res.json();
 
-const BASE_URL = 'https://test-fe.mysellerpintar.com/api';
-
-export async function fetchArticles(): Promise<Article[]> {
-  try {
-    const res = await api.get(`${BASE_URL}/articles`);
-    console.log(res.data)
-    return res.data;
-  } catch (err) {
-    // fallback pakai dummy
-    console.warn('Fetch API gagal, fallback ke dummy articles', err);
-    return dummyArticles;
-  }
+  return articles;
 }
 
-export default api;
+export async function getArticleById(id: string) {
+  const res = await fetch(`${API_HOST}/api/articles/${id}`, {
+    cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch article");
+  }
+  const article = await res.json();
+  return article;
+}
