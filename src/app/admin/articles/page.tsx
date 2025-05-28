@@ -3,13 +3,13 @@
 import React, { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
 import { Article, ArticleInput } from "@/lib/type";
-import Category from "@/app/user/articles/CategorySelesct";
 import {
   getArticles,
   createArticle,
   updateArticle,
   deleteArticle,
 } from "@/lib/api";
+import Category from "@/app/articles/CategorySelesct";
 
 const AdminArticlesPage = () => {
   const [articles, setArticles] = useState<Article[]>([]);

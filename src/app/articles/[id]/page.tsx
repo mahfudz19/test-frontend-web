@@ -49,7 +49,7 @@ export default async function Page({
             {filteredOtherArticles.map((a) => (
               <li key={a.id} className="mb-4 border p-4 rounded shadow">
                 <Link
-                  href={`/user/articles/${a.id}`}
+                  href={`/articles/${a.id}`}
                   className="text-xl font-semibold text-blue-600 hover:underline"
                 >
                   {a.title}
