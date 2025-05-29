@@ -249,13 +249,14 @@ const AdminCategoriesPage = () => {
             <label className="block mb-1 font-semibold" htmlFor="userId">
               User ID
             </label>
-            <input
+            <Input
               type="text"
               id="userId"
               name="userId"
+              variant="bordered"
               value={formData.userId}
               onChange={handleFormChange}
-              className="border p-2 w-full"
+              fullWidth
               required
             />
           </div>
@@ -263,30 +264,29 @@ const AdminCategoriesPage = () => {
             <label className="block mb-1 font-semibold" htmlFor="name">
               Category Name
             </label>
-            <input
+            <Input
               type="text"
               id="name"
               name="name"
+              variant="bordered"
               value={formData.name}
               onChange={handleFormChange}
-              className="border p-2 w-full"
+              fullWidth
               required
             />
           </div>
           <div className="flex justify-end space-x-2">
-            <button
+            <Button
               type="button"
+              variant="text"
+              color="error"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border rounded"
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded"
-            >
+            </Button>
+            <Button type="submit">
               {modalMode === "create" ? "Create" : "Update"}
-            </button>
+            </Button>
           </div>
         </form>
       </Dialog>

@@ -132,15 +132,10 @@ export default function ArticleForm({
 
       {/* buttons */}
       <div className="flex justify-end space-x-2">
-        <Button
-          type="button"
-          variant="outlined"
-          color="error"
-          onClick={onClose}
-        >
+        <Button type="button" variant="text" color="error" onClick={onClose}>
           Cancel
         </Button>
-        <Button type="reset" variant="outlined" color="warning">
+        <Button type="reset" variant="text" color="warning">
           Reset
         </Button>
         <Button type="submit">
