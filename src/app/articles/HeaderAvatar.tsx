@@ -1,4 +1,5 @@
 "use client";
+import { Inbox, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Avatar from "src/components/ui/Avatar";
 import Link from "src/components/ui/Link";
@@ -26,14 +27,18 @@ const HeaderAvatar = () => {
           James Dean
         </Link>
       </div>
-      <Menu anchor="bottom-end" {...menu}>
-        <MenuItem href="/settings" Link={Link} onClick={menu.onClose}>
-          Setting
+      <Menu anchor="bottom-end" {...menu} className="min-w-[160px]">
+        <MenuItem
+          href="/admin"
+          Link={Link}
+          onClick={menu.onClose}
+          iconStart={<Inbox size={18} />}
+        >
+          Admin
         </MenuItem>
-        <MenuItem href="#" Link={Link} onClick={menu.onClose}>
-          Ganti Password
+        <MenuItem onClick={handleLogout} iconStart={<LogOut size={18} />}>
+          Logout
         </MenuItem>
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
     </>
   );

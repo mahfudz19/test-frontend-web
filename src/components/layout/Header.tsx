@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import IconButton from "./ui/IconButton";
-import IconMenu from "./ui/Icon/IconMenu";
-import IconMenuFoldLeft from "./ui/Icon/IconMenuFoldLeft";
+import IconButton from "../ui/IconButton";
+import IconMenu from "../ui/Icon/IconMenu";
+import IconMenuFoldLeft from "../ui/Icon/IconMenuFoldLeft";
 
 const pathToTitle = (path: string) => {
   if (path.includes("/admin/articles")) return "Articles";

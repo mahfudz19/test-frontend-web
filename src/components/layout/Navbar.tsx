@@ -1,7 +1,7 @@
 import React from "react";
-import Container from "./ui/Container";
-import Link from "./ui/Link";
-import IconLogoIpsum from "./ui/Icon/IconLogoIpsum";
+import Container from "../ui/Container";
+import Link from "../ui/Link";
+import IconLogoIpsum from "../ui/Icon/IconLogoIpsum";
 import HeaderAvatar from "src/app/articles/HeaderAvatar";
 
 function Navbar() {

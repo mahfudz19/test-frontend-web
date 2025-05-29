@@ -4,9 +4,10 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { LogOut, LayoutGrid, Folder } from "lucide-react";
 import { twMerge as cn } from "tailwind-merge";
-import IconButton from "./ui/IconButton";
-import IconMenu from "./ui/Icon/IconMenu";
-import IconMenuFoldLeft from "./ui/Icon/IconMenuFoldLeft";
+import IconButton from "../ui/IconButton";
+import IconMenu from "../ui/Icon/IconMenu";
+import IconMenuFoldLeft from "../ui/Icon/IconMenuFoldLeft";
+import IconLogoIpsum from "../ui/Icon/IconLogoIpsum";
 
 const menu = [
   { href: "/admin/articles", icon: <LayoutGrid />, label: "Articles" },
@@ -25,7 +26,13 @@ export default function Sidebar({
   return (
     <aside className="h-full bg-blue-600 text-white w-64 flex flex-col">
       <div className="p-4 font-bold text-lg flex justify-between items-center">
-        Admin
+        <Link
+          href="/"
+          className="flex items-center justify-center my-auto space-x-2 text-white"
+        >
+          <IconLogoIpsum fontSize={32} />
+          <span className="text-base sm:text-lg font-semibold">Logoipsum</span>
+        </Link>
         <IconButton
           color="white"
           onClick={closeSidebar}
