@@ -114,8 +114,8 @@ const AdminArticlesPage = () => {
           </Typography>
 
           <div className="p-4 flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 flex gap-4">
-              <div className="w-36">
+            <div className="flex-1 flex flex-col sm:flex-row justify-end gap-4">
+              <div className="sm:w-36">
                 <Category
                   handleChangeClient={(e) => {
                     setCategory(e);
