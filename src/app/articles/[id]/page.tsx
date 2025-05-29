@@ -1,14 +1,9 @@
-import { getArticleById, getArticles } from "@/lib/api";
+import { getArticleById, getArticles } from "src/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const article = await getArticleById(id);
+export default async function Page({ params }: { params: { id: string } }) {
+  const article = await getArticleById(params.id);
 
   const { data: otherArticles } = await getArticles({
     category: article.category.id,
@@ -20,47 +15,74 @@ export default async function Page({
     .slice(0, 3);
 
   return (
-    <main className="p-4">
-      <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
-      <p className="text-sm text-gray-500 mb-2">
-        By: {article.user.username} | Category: {article.category.name} |
-        Created: {new Date(article.createdAt).toLocaleDateString()}
-      </p>
-      {article.imageUrl && (
-        <Image
-          width={400}
-          height={300}
-          src={article.imageUrl}
-          alt={article.title}
-          className="my-4 rounded"
-        />
-      )}
-      <article
-        className="prose max-w-none mb-8"
-        dangerouslySetInnerHTML={{ __html: article.content }}
-      />
+    <main className="max-w-5xl mx-auto px-4 py-8">
+      {/* Artikel utama */}
+      <article>
+        <h1 className="text-4xl font-extrabold mb-4 leading-tight text-gray-900">
+          {article.title}
+        </h1>
+        <p className="text-sm text-gray-500 mb-4">
+          By <strong>{article.user.username}</strong> ·{" "}
+          <span>{article.category.name}</span> ·{" "}
+          {new Date(article.createdAt).toLocaleDateString()}
+        </p>
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Other Articles</h2>
+        {article.imageUrl && (
+          <div className="relative w-full h-64 md:h-96 mb-6 rounded-lg overflow-hidden">
+            <Image
+              src={article.imageUrl}
+              alt={article.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        )}
+
+        <div
+          className="prose lg:prose-lg prose-blue prose-img:rounded-lg prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline max-w-none"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
+      </article>
+
+      {/* Artikel lain */}
+      <section className="mt-12">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          Related Articles
+        </h2>
+
         {filteredOtherArticles.length === 0 ? (
-          <p>No other articles in this category.</p>
+          <p className="text-gray-500">No other articles in this category.</p>
         ) : (
-          <ul>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredOtherArticles.map((a) => (
-              <li key={a.id} className="mb-4 border p-4 rounded shadow">
-                <Link
-                  href={`/articles/${a.id}`}
-                  className="text-xl font-semibold text-blue-600 hover:underline"
-                >
+              <Link
+                key={a.id}
+                href={`/articles/${a.id}`}
+                className="block p-4 bg-white border rounded-lg shadow-sm hover:shadow-md transition"
+              >
+                {a.imageUrl && (
+                  <div className="relative w-full h-40 rounded mb-3 overflow-hidden">
+                    <Image
+                      src={a.imageUrl}
+                      alt={a.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
                   {a.title}
-                </Link>
-                <p className="text-sm text-gray-500">
-                  By: {a.user.username} | Created:{" "}
+                </h3>
+                <p className="text-sm text-gray-500 mb-1">
+                  By {a.user.username}
+                </p>
+                <p className="text-xs text-gray-400">
                   {new Date(a.createdAt).toLocaleDateString()}
                 </p>
-              </li>
+              </Link>
             ))}
-          </ul>
+          </div>
         )}
       </section>
     </main>

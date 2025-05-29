@@ -1,8 +1,20 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback } from "react";
+import IconSearch from "src/components/ui/Icon/IconSearch";
+import Input from "src/components/ui/Input";
 
-const SearchArticles = () => {
+const SearchArticles = ({
+  value,
+  handleChangeClient,
+  variant,
+  fullWidth,
+}: {
+  value: string;
+  handleChangeClient?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  variant?: "default" | "bordered" | "underlined";
+  fullWidth?: boolean;
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -36,12 +48,17 @@ const SearchArticles = () => {
 
   return (
     <Suspense fallback={<div>Loading pagination...</div>}>
-      <input
+      <Input
         type="text"
-        // value={search}
-        onChange={handleSearchChange}
+        value={value}
+        startAdornment={<IconSearch />}
+        onChange={(e) =>
+          handleChangeClient ? handleChangeClient(e) : handleSearchChange(e)
+        }
+        variant={variant}
         placeholder="Search articles..."
-        className="border p-2 flex-grow"
+        fullWidth={fullWidth}
+        noFocusAnimation
       />
     </Suspense>
   );

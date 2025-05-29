@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { registerUser } from "@/lib/auth"; // Fungsi request ke API Register
+import { registerUser } from "src/lib/auth"; // Fungsi request ke API Register
 
 type FormData = {
   name: string;

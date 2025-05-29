@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { login } from "@/lib/auth";
+import { login } from "src/lib/auth";
 
 type FormData = {
   email: string;

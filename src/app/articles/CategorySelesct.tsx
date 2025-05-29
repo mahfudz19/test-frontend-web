@@ -2,11 +2,16 @@
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import CircularProgress from "src/components/ui/CircularProgress";
+import Select from "src/components/ui/Select";
+import Option from "src/components/ui/Select/Option";
 
 const Category = ({
   handleChangeClient,
+  variant,
 }: {
   handleChangeClient?: (value: string) => void;
+  variant?: "default" | "bordered" | "underlined";
 }) => {
   type ICategory = {
     data: {
@@ -42,36 +47,35 @@ const Category = ({
     fetchArticles();
   }, []);
 
-  if (loading) return <></>;
-
   const handleChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value) {
-      params.set("category", value);
-    } else {
-      params.delete("category");
-    }
+    if (value) params.set("category", value);
+    else params.delete("category");
 
     router.push(`?${params.toString()}`);
   };
 
   return (
-    <select
+    <Select
       onChange={(e) =>
         handleChangeClient
           ? handleChangeClient(e.target.value)
           : handleChange(e.target.value)
       }
-      className="border p-2 w-full h-full mb-4"
+      variant={variant}
+      placeholder="Category"
+      fullWidth
+      noFocusAnimation
+      disabled={loading}
+      endAdornment={loading ? <CircularProgress color="primary" /> : <></>}
     >
-      <option value="">Semua Kategori</option>
       {categories.map((cat) => (
-        <option key={cat.id} value={cat.id}>
-          {cat.name}
-        </option>
+        <Option key={cat.id} value={cat.id}>
+          {cat.id ? cat.name : "Semua Kategori"}
+        </Option>
       ))}
-    </select>
+    </Select>
   );
 };
 

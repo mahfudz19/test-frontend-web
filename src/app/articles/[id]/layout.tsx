@@ -1,5 +1,5 @@
-import LogoutButton from "@/components/LogoutButton";
 import type { Metadata } from "next";
+import Navbar from "src/components/Navbar";
 
 export const metadata: Metadata = {
   title: "articles",
@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <main>
-      <LogoutButton />
+      <Navbar />
       {children}
     </main>
   );

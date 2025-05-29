@@ -1,4 +1,4 @@
-import { getURLParams } from "@/components/util/formats";
+import { getURLParams } from "src/components/util/formats";
 import { GetArticle, ArticleInput, CategoryInput, Category } from "./type";
 const API_HOST = process.env.API_HOST || "https://test-fe.mysellerpintar.com";
 
