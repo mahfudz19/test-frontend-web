@@ -246,21 +246,6 @@ const AdminCategoriesPage = () => {
       >
         <form onSubmit={handleFormSubmit} className="p-4 space-y-4">
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="userId">
-              User ID
-            </label>
-            <Input
-              type="text"
-              id="userId"
-              name="userId"
-              variant="bordered"
-              value={formData.userId}
-              onChange={handleFormChange}
-              fullWidth
-              required
-            />
-          </div>
-          <div>
             <label className="block mb-1 font-semibold" htmlFor="name">
               Category Name
             </label>

@@ -6,6 +6,8 @@ import { Control, Controller, useForm } from "react-hook-form";
 import RichText from "src/components/RichText";
 import AutoComplete from "src/components/ui/Autocomplete";
 import Button from "src/components/ui/Button";
+import Dialog from "src/components/ui/Dialog";
+import ImageEditor, { ImageEditorModal } from "src/components/ui/ImageEditor";
 import Input from "src/components/ui/Input";
 import Skeleton from "src/components/ui/Skeleton";
 import { ArticleInput, GetCategory } from "src/lib/type";
@@ -133,91 +135,111 @@ export default function ArticleForm({
 
     onSubmitForm(result.data);
   };
+  const selectedImage = getValues("imageUrl") || null;
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const handleSave = (dataUrl: string) => {
+    console.log(dataUrl);
+    setIsDialogOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsDialogOpen(false);
+  };
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="p-4 space-y-4">
-      {/* userId */}
-      <div>
-        <Input
-          label="User ID"
-          type="text"
-          id="userId"
-          {...register("userId")}
-          variant="bordered"
-          fullWidth
-          error={Boolean(errors.userId && touchedFields.userId)}
-          helperText={errors.userId && String(errors.userId.message)}
-        />
-      </div>
+    <>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="p-4 space-y-4">
+        {/* categoryId */}
+        <div>
+          <label className="block mb-1 font-semibold" htmlFor="categoryId">
+            Category ID
+          </label>
+          <CategoriesField control={control} />
+        </div>
 
-      {/* categoryId */}
-      <div>
-        <label className="block mb-1 font-semibold" htmlFor="categoryId">
-          Category ID
-        </label>
-        <CategoriesField control={control} />
-      </div>
+        {/* title */}
+        <div>
+          <label className="block mb-1 font-semibold" htmlFor="title">
+            Title
+          </label>
+          <Input
+            type="text"
+            id="title"
+            {...register("title")}
+            variant="bordered"
+            fullWidth
+            error={Boolean(errors.userId && touchedFields.userId)}
+            helperText={errors.userId && String(errors.userId.message)}
+          />
+        </div>
 
-      {/* title */}
-      <div>
-        <label className="block mb-1 font-semibold" htmlFor="title">
-          Title
-        </label>
-        <Input
-          type="text"
-          id="title"
-          {...register("title")}
-          variant="bordered"
-          fullWidth
-          error={Boolean(errors.userId && touchedFields.userId)}
-          helperText={errors.userId && String(errors.userId.message)}
-        />
-      </div>
+        {/* content */}
+        <div>
+          <label className="block mb-1 font-semibold" htmlFor="content">
+            Content (HTML)
+          </label>
+          <RichText
+            id="content"
+            onChange={(val) => setValue("content", val, { shouldDirty: true })}
+            error={
+              Boolean(errors.content && touchedFields.content)
+                ? String(errors.content)
+                : undefined
+            }
+          />
+        </div>
 
-      {/* content */}
-      <div>
-        <label className="block mb-1 font-semibold" htmlFor="content">
-          Content (HTML)
-        </label>
-        <RichText
-          id="content"
-          onChange={(val) => setValue("content", val, { shouldDirty: true })}
-          error={
-            Boolean(errors.content && touchedFields.content)
-              ? String(errors.content)
-              : undefined
-          }
-        />
-      </div>
+        {/* imageUrl */}
+        <div>
+          <label className="block mb-1 font-semibold" htmlFor="imageUrl">
+            Image URL
+          </label>
+          <ImageEditor
+            width={862}
+            height={343}
+            shape="square"
+            image={selectedImage}
+            onImageSelect={(imageData) => {
+              setValue("imageUrl", imageData, { shouldDirty: true });
+              setIsDialogOpen(true);
+            }}
+          />
+        </div>
 
-      {/* imageUrl */}
-      <div>
-        <label className="block mb-1 font-semibold" htmlFor="imageUrl">
-          Image URL
-        </label>
-        <Input
-          type="text"
-          id="imageUrl"
-          {...register("imageUrl")}
-          variant="bordered"
-          fullWidth
-          error={Boolean(errors.userId && touchedFields.userId)}
-          helperText={errors.userId && String(errors.userId.message)}
-        />
-      </div>
+        {/* buttons */}
+        <div className="flex justify-end space-x-2">
+          <Button type="button" variant="text" color="error" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="reset" variant="text" color="warning">
+            Reset
+          </Button>
+          <Button type="submit">
+            {modalMode === "create" ? "Create" : "Update"}
+          </Button>
+        </div>
+      </form>
 
-      {/* buttons */}
-      <div className="flex justify-end space-x-2">
-        <Button type="button" variant="text" color="error" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button type="reset" variant="text" color="warning">
-          Reset
-        </Button>
-        <Button type="submit">
-          {modalMode === "create" ? "Create" : "Update"}
-        </Button>
-      </div>
-    </form>
+      {/* Dialog untuk editing */}
+      <Dialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        title="Edit Avatar"
+        fullWidth
+        maxWidth="lg"
+        closeButtom
+      >
+        <div className="px-4 pb-4">
+          <ImageEditorModal
+            width={862}
+            height={343}
+            shape="square"
+            image={selectedImage}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          />
+        </div>
+      </Dialog>
+    </>
   );
 }

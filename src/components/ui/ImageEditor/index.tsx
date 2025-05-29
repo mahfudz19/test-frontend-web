@@ -43,6 +43,7 @@ export function ImageEditorModal({
     width: 0,
     height: 0,
   });
+  console.log({ image });
 
   const imageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -431,15 +432,22 @@ export function ImageEditorModal({
   );
 }
 
-interface AvatarUploaderProps {
+interface ImageEditorProps {
   width?: number;
   height?: number;
   shape?: "circle" | "square" | "rounded";
+  image: string | null;
   onImageSelect?: (imageData: string) => void;
 }
 
-export default function AvatarUploader(props: AvatarUploaderProps) {
-  const { width = 256, height = 256, shape = "circle", onImageSelect } = props;
+export default function ImageEditor(props: ImageEditorProps) {
+  const {
+    width = 256,
+    height = 256,
+    shape = "circle",
+    onImageSelect,
+    image,
+  } = props;
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -486,9 +494,7 @@ export default function AvatarUploader(props: AvatarUploaderProps) {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Avatar Editor</h2>
-
+    <div className="flex flex-col items-center w-full max-w-md mx-auto">
       {/* Upload area */}
       <div
         className={`relative overflow-hidden border-2 p-4 ${
@@ -502,12 +508,22 @@ export default function AvatarUploader(props: AvatarUploaderProps) {
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
       >
-        <div className="flex flex-col items-center justify-center h-full text-gray-500">
-          <IconUpload className="w-10 h-10 mb-2" />
-          <p className="text-sm text-center">
-            Drag & drop gambar atau klik untuk upload
-          </p>
-        </div>
+        {image ? (
+          <Image
+            src={`${image}`}
+            alt={`${image}`}
+            width={width}
+            height={height}
+            className="absolute top-0 right-0 left-0 bottom-0"
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+            <IconUpload className="w-10 h-10 mb-2" />
+            <p className="text-sm text-center">
+              Drag & drop gambar atau klik untuk upload
+            </p>
+          </div>
+        )}
         <input
           type="file"
           ref={fileInputRef}
