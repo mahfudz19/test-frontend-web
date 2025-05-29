@@ -24,7 +24,7 @@ export default function LoginPage() {
       localStorage.setItem("role", res.role);
       router.push(res.role === "admin" ? "/admin/articles" : "/articles");
     } catch {
-      alert("Login gagal");
+      alert("err.message");
     }
   };
 

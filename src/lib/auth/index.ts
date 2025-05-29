@@ -1,38 +1,34 @@
-import data from '../dummy-auth.json';
-import { RegisterPayload, RegisterResponse, User } from './type';
+import { dummyUsers } from "../dummy-auth";
 
-const dummyUsers: User[] = data.dummyUsers.map((u) => ({
-  ...u,
-  role: u.role as User['role'],
-})); // in-memory copy
+type LoginData = {
+  email: string;
+  password: string;
+};
 
-export async function login({ email, password }: { email: string; password: string }) {
-  await new Promise((res) => setTimeout(res, 500));
-  console.log(dummyUsers)
+type RegisterData = {
+  name: string;
+  email: string;
+  password: string;
+};
 
-  const user = dummyUsers.find( (u) => u.email === email && u.password === password );
+type AuthResponse = {
+  token: string;
+  role: "admin" | "user";
+};
 
-  if (!user) throw new Error('Email atau password salah');
+export async function login(data: LoginData): Promise<AuthResponse> {
+  const user = dummyUsers.find(
+    (u) => u.email === data.email && u.password === data.password
+  );
+  console.log({ data, dummyUsers, user });
+  if (!user) {
+    throw new Error("Invalid credentials");
+  }
 
-  const token = btoa(`${user.id}:${user.role}`);
-
-  return { token, role: user.role, userId: user.id} as { token: string; role: User['role']; userId: string };
+  return { token: "dummy-token", role: user.role as "admin" | "user" };
 }
 
-export async function registerUser(payload: RegisterPayload): Promise<RegisterResponse> {
-  await new Promise((res) => setTimeout(res, 500));
-
-  const userExists = dummyUsers.find((u) => u.email === payload.email);
-  if (userExists) throw new Error('Email sudah digunakan');
-
-  const newUser: User = {
-    id: Date.now().toString(),
-    email: payload.email,
-    password: payload.password,
-    role: 'user',
-  };
-
-  dummyUsers.push(newUser);
-
-  return { token: 'dummy-token-' + newUser.id, role: newUser.role };
+export async function registerUser(data: RegisterData): Promise<AuthResponse> {
+  console.log(data);
+  return { token: "dummy-token", role: "user" };
 }
