@@ -97,34 +97,34 @@ const outlinedVariant = cva(
     variants: {
       color: {
         primary: [
-          "outline-primary-main dark:outline-primary-dark",
-          "text-primary-main",
-          "focus:ring-primary-main",
+          "outline-blue-700 dark:outline-blue-900",
+          "text-blue-700",
+          "focus:ring-blue-700",
         ],
         secondary: [
-          "outline-secondary-main dark:outline-secondary-dark",
-          "text-secondary-main",
-          "focus:ring-secondary-main",
+          "outline-gray-700 dark:outline-gray-900",
+          "text-gray-700",
+          "focus:ring-gray-700",
         ],
         success: [
-          "outline-success-main dark:outline-success-dark",
-          "text-success-main",
-          "focus:ring-success-main",
+          "outline-green-700 dark:outline-green-900",
+          "text-green-700",
+          "focus:ring-green-700",
         ],
         error: [
-          "outline-error-main dark:outline-error-dark",
-          "text-error-main",
-          "focus:ring-error-main",
+          "outline-red-700 dark:outline-red-900",
+          "text-red-700",
+          "focus:ring-red-700",
         ],
         warning: [
-          "outline-warning-main dark:outline-warning-dark",
-          "text-warning-main",
-          "focus:ring-warning-main",
+          "outline-yellow-700 dark:outline-yellow-900",
+          "text-yellow-700",
+          "focus:ring-yellow-700",
         ],
         info: [
-          "outline-info-main dark:outline-info-dark",
-          "text-info-main",
-          "focus:ring-info-main",
+          "outline-sky-700 dark:outline-sky-900",
+          "text-sky-700",
+          "focus:ring-sky-700",
         ],
         white: [
           "outline-gray-500 dark:outline-white",
@@ -149,27 +149,18 @@ const textVariant = cva(
   {
     variants: {
       color: {
-        primary: [
-          "text-primary-main",
-          "hover:text-primary-dark focus:ring-primary-main",
-        ],
-        secondary: [
-          "text-secondary-main",
-          "hover:text-secondary-dark focus:ring-secondary-main",
-        ],
+        primary: ["text-blue-700", "hover:text-blue-900 focus:ring-blue-700"],
+        secondary: ["text-gray-700", "hover:text-gray-900 focus:ring-gray-700"],
         success: [
-          "text-success-main",
-          "hover:text-success-dark focus:ring-success-main",
+          "text-green-700",
+          "hover:text-green-900 focus:ring-green-700",
         ],
-        error: [
-          "text-error-main",
-          "hover:text-error-dark focus:ring-error-main",
-        ],
+        error: ["text-red-700", "hover:text-red-900 focus:ring-red-700"],
         warning: [
-          "text-warning-main",
-          "hover:text-warning-dark focus:ring-warning-main",
+          "text-yellow-700",
+          "hover:text-yellow-900 focus:ring-yellow-700",
         ],
-        info: ["text-info-main", "hover:text-info-dark focus:ring-info-main"],
+        info: ["text-sky-700", "hover:text-sky-900 focus:ring-sky-700"],
         white: [
           "text-gray-500 dark:text-white",
           "focus:ring-gray-500 dark:focus:ring-white",

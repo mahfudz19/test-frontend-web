@@ -10,7 +10,7 @@ const SearchArticles = ({
   variant,
   fullWidth,
 }: {
-  value: string;
+  value?: string;
   handleChangeClient?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   variant?: "default" | "bordered" | "underlined";
   fullWidth?: boolean;

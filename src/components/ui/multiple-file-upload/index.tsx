@@ -1,172 +1,233 @@
-'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import Image from 'next/image'
-import { JSX, useCallback, useEffect, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
-import IconAlertCircleTwotone from '../Icon/IconAlertCircleTwotone'
-import IconClose from '../Icon/IconClose'
-import IconDownload from '../Icon/IconDownload'
-import IconFile from '../Icon/IconFile'
-import IconUpload from '../Icon/IconUpload'
-import IconButton from '../IconButton'
-import Progress from '../Progress'
-import Skeleton from '../Skeleton'
-import { commonMimeTypes } from './commonMimeTypes'
-import CircularProgress from '../CircularProgress'
-import Typography from '../Typograph'
+import Image from "next/image";
+import { JSX, useCallback, useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
+import IconAlertCircleTwotone from "../Icon/IconAlertCircleTwotone";
+import IconClose from "../Icon/IconClose";
+import IconDownload from "../Icon/IconDownload";
+import IconFile from "../Icon/IconFile";
+import IconUpload from "../Icon/IconUpload";
+import IconButton from "../IconButton";
+import Progress from "../Progress";
+import Skeleton from "../Skeleton";
+import { commonMimeTypes } from "./commonMimeTypes";
+import CircularProgress from "../CircularProgress";
+import Typography from "../Typograph";
 
 interface Props {
-  id?: string
-  label?: string | JSX.Element
-  value: (string | File | FormData)[]
-  onChange?: (formData: FormData[], file: File[]) => Promise<any> | void
-  handleOnChangeError?: (error: any) => Promise<any>
-  downloadPrivateFile?: (body: string | File | FormData) => Promise<any>
-  deletePrivateFile?: (nameFile: string | File | FormData, updatedValues: (string | File | FormData)[]) => Promise<any>
-  limit?: number
-  sizeLimit?: number
-  error?: string
-  required?: boolean
-  disabled?: boolean
-  readOnly?: boolean
-  isLoad?: boolean
-  moreText?: string
-  autoLimitFiles?: boolean
-  classNames?: { root?: string; container?: string }
+  id?: string;
+  label?: string | JSX.Element;
+  value: (string | File | FormData)[];
+  onChange?: (formData: FormData[], file: File[]) => Promise<any> | void;
+  handleOnChangeError?: (error: any) => Promise<any>;
+  downloadPrivateFile?: (body: string | File | FormData) => Promise<any>;
+  deletePrivateFile?: (
+    nameFile: string | File | FormData,
+    updatedValues: (string | File | FormData)[]
+  ) => Promise<any>;
+  limit?: number;
+  sizeLimit?: number;
+  error?: string;
+  required?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
+  isLoad?: boolean;
+  moreText?: string;
+  autoLimitFiles?: boolean;
+  classNames?: { root?: string; container?: string };
 }
 
-const convertBytesToMB = (bytes: number): string => (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+const convertBytesToMB = (bytes: number): string =>
+  (bytes / (1024 * 1024)).toFixed(2) + " MB";
 
 const getFileTypeIcon = (file: File | string, size = 70) => {
-  let mimeType = ''
+  let mimeType = "";
 
-  if (typeof file === 'string') {
+  if (typeof file === "string") {
     // Try to determine mime type from extension
-    const extension = '.' + file.split('.').pop()?.toLowerCase()
-    const found = commonMimeTypes.find(type => type.extensions.includes(extension))
-    mimeType = found?.mime || ''
-  } else if (file && typeof file === 'object' && 'type' in file) mimeType = file.type
+    const extension = "." + file.split(".").pop()?.toLowerCase();
+    const found = commonMimeTypes.find((type) =>
+      type.extensions.includes(extension)
+    );
+    mimeType = found?.mime || "";
+  } else if (file && typeof file === "object" && "type" in file)
+    mimeType = file.type;
 
   // Find matching mime type
-  const fileType = commonMimeTypes.find(type => type.mime === mimeType)
+  const fileType = commonMimeTypes.find((type) => type.mime === mimeType);
 
-  if (fileType) return fileType.icon
+  if (fileType) return fileType.icon;
 
-  return <IconFile fontSize={size} className='text-gray-500' />
-}
+  return <IconFile fontSize={size} className="text-gray-500" />;
+};
 
 const getFileName = (file: File | string | FormData): string => {
-  if (typeof file === 'string') return file.split('/').pop() || file
-  if (file && typeof file === 'object' && 'name' in file && typeof file.name === 'string') return file.name
-  return 'FormData'
-}
+  if (typeof file === "string") return file.split("/").pop() || file;
+  if (
+    file &&
+    typeof file === "object" &&
+    "name" in file &&
+    typeof file.name === "string"
+  )
+    return file.name;
+  return "FormData";
+};
 
 const getFileSize = (file: File | string | FormData): number => {
-  if (file && typeof file === 'object' && 'size' in file && typeof file.size === 'number') return file.size
-  return 0
-}
+  if (
+    file &&
+    typeof file === "object" &&
+    "size" in file &&
+    typeof file.size === "number"
+  )
+    return file.size;
+  return 0;
+};
 
 // Loading skeleton for document cards
 const DocumentSkeleton = () => (
-  <div className='flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-300 dark:border-blue-500 w-[120px] max-w-[120px] h-[120px] max-h-[120px] animate-pulse shadow-lg shadow-blue-200 dark:shadow-blue-900/50 ring-2 ring-blue-100 dark:ring-blue-800'>
-    <div className='relative'>
-      <Skeleton width='3rem' height='3rem' variant='rounded' />
-      <div className='absolute inset-0 bg-blue-500/20 rounded animate-ping' />
+  <div className="flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-300 dark:border-blue-500 w-[120px] max-w-[120px] h-[120px] max-h-[120px] animate-pulse shadow-lg shadow-blue-200 dark:shadow-blue-900/50 ring-2 ring-blue-100 dark:ring-blue-800">
+    <div className="relative">
+      <Skeleton width="3rem" height="3rem" variant="rounded" />
+      <div className="absolute inset-0 bg-blue-500/20 rounded animate-ping" />
     </div>
-    <Skeleton width='4rem' height='0.75rem' className='mt-2 bg-blue-200 dark:bg-blue-700' />
-    <Skeleton width='3rem' height='0.5rem' className='mt-1 bg-blue-100 dark:bg-blue-800' />
-    <div className='absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-bounce' />
+    <Skeleton
+      width="4rem"
+      height="0.75rem"
+      className="mt-2 bg-blue-200 dark:bg-blue-700"
+    />
+    <Skeleton
+      width="3rem"
+      height="0.5rem"
+      className="mt-1 bg-blue-100 dark:bg-blue-800"
+    />
+    <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-bounce" />
   </div>
-)
+);
 
 // Document components with loading states
-const DocumentString = ({ src, alt, isLoading = false }: { src: string; alt: string; isLoading?: boolean }) => {
-  const fileName = alt.split('/').pop() || alt
+const DocumentString = ({
+  src,
+  alt,
+  isLoading = false,
+}: {
+  src: string;
+  alt: string;
+  isLoading?: boolean;
+}) => {
+  const fileName = alt.split("/").pop() || alt;
 
-  if (isLoading) return <DocumentSkeleton />
+  if (isLoading) return <DocumentSkeleton />;
 
   return (
-    <div className='flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 w-[120px] max-w-[120px] h-[120px] max-h-[120px]'>
+    <div className="flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 w-[120px] max-w-[120px] h-[120px] max-h-[120px]">
       <div title={getFileName(src)}>{getFileTypeIcon(src, 56)}</div>
-      <p className='text-xs mt-2 text-center truncate w-full px-1' title={fileName}>
+      <p
+        className="text-xs mt-2 text-center truncate w-full px-1"
+        title={fileName}
+      >
         {fileName}
       </p>
     </div>
-  )
-}
+  );
+};
 
-const DocumentFile = ({ src, alt, isLoading = false }: { src: File; alt: string; isLoading?: boolean }) => {
-  if (isLoading) return <DocumentSkeleton />
+const DocumentFile = ({
+  src,
+  alt,
+  isLoading = false,
+}: {
+  src: File;
+  alt: string;
+  isLoading?: boolean;
+}) => {
+  if (isLoading) return <DocumentSkeleton />;
 
   return (
-    <div className='flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 w-[120px] max-w-[120px] h-[120px] max-h-[120px]'>
-      {src.type.startsWith('image/') ? (
+    <div className="flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 w-[120px] max-w-[120px] h-[120px] max-h-[120px]">
+      {src.type.startsWith("image/") ? (
         <Image
-          src={URL.createObjectURL(src) || '/placeholder.svg'}
+          src={URL.createObjectURL(src) || "/placeholder.svg"}
           alt={alt}
           width={56}
           height={56}
-          className='object-cover flex-1 max-w-[56px] min-w-[56px] max-h-[56px] min-h-[56px] rounded'
-          onLoad={e => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+          className="object-cover flex-1 max-w-[56px] min-w-[56px] max-h-[56px] min-h-[56px] rounded"
+          onLoad={(e) =>
+            URL.revokeObjectURL((e.target as HTMLImageElement).src)
+          }
         />
       ) : (
         <div style={{ fontSize: 37.5 }}>{getFileTypeIcon(src, 56)}</div>
       )}
-      <p className='text-xs mt-2 text-center truncate w-full px-1' title={alt}>
+      <p className="text-xs mt-2 text-center truncate w-full px-1" title={alt}>
         {alt}
       </p>
-      <p className='text-xs text-gray-500'>{convertBytesToMB(src.size)}</p>
+      <p className="text-xs text-gray-500">{convertBytesToMB(src.size)}</p>
     </div>
-  )
-}
+  );
+};
 
 const DocumentFormData = ({ isLoading = false }: { isLoading?: boolean }) => {
-  if (isLoading) return <DocumentSkeleton />
+  if (isLoading) return <DocumentSkeleton />;
 
   return (
-    <div className='flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 w-[120px] max-w-[120px] h-[120px] max-h-[120px]'>
-      <IconFile fontSize={50} className='text-gray-500' />
-      <p className='text-xs mt-2 text-center' title='FormData'>
+    <div className="flex flex-col items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 w-[120px] max-w-[120px] h-[120px] max-h-[120px]">
+      <IconFile fontSize={50} className="text-gray-500" />
+      <p className="text-xs mt-2 text-center" title="FormData">
         FormData
       </p>
     </div>
-  )
-}
+  );
+};
 
-const DownloadItem = ({ onClick, disabled = false }: { onClick: () => void; disabled?: boolean }) => (
+const DownloadItem = ({
+  onClick,
+  disabled = false,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+}) => (
   <IconButton
-    type='button'
-    variant='text'
-    sizes='small'
-    onClick={e => {
-      e.preventDefault()
-      e.stopPropagation()
-      if (!disabled) onClick()
+    type="button"
+    variant="text"
+    sizes="small"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!disabled) onClick();
     }}
     disabled={disabled}
-    className='absolute top-1 right-1 bg-primary-main/10 dark:bg-primary-main/25 p-1'
+    className="absolute top-1 right-1 bg-primary-main/10 dark:bg-primary-main/25 p-1"
   >
     <IconDownload fontSize={12} />
   </IconButton>
-)
+);
 
-const RemoveItem = ({ onClick, disabled = false }: { onClick: () => void; disabled?: boolean }) => (
+const RemoveItem = ({
+  onClick,
+  disabled = false,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+}) => (
   <IconButton
-    type='button'
-    variant='text'
-    color='error'
-    sizes='small'
-    onClick={e => {
-      e.preventDefault()
-      e.stopPropagation()
-      if (!disabled) onClick()
+    type="button"
+    variant="text"
+    color="error"
+    sizes="small"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!disabled) onClick();
     }}
     disabled={disabled}
-    className='absolute top-1 left-1 bg-error-main/10 dark:bg-error-main/25 p-[5px]'
+    className="absolute top-1 left-1 bg-error-main/10 dark:bg-error-main/25 p-[5px]"
   >
     <IconClose fontSize={10} />
   </IconButton>
-)
+);
 
 export default function MultipleFileUpload(props: Props) {
   const {
@@ -186,130 +247,145 @@ export default function MultipleFileUpload(props: Props) {
     isLoad = false,
     moreText,
     autoLimitFiles = false,
-    classNames
-  } = props
-  const [dragOver, setDragOver] = useState(false)
-  const [loadingFiles, setLoadingFiles] = useState<Set<string>>(new Set())
-  const [alert, setAlert] = useState<{ message: string; alert: 'warning' | 'error' } | undefined>(undefined)
+    classNames,
+  } = props;
+  const [dragOver, setDragOver] = useState(false);
+  const [loadingFiles, setLoadingFiles] = useState<Set<string>>(new Set());
+  const [alert, setAlert] = useState<
+    { message: string; alert: "warning" | "error" } | undefined
+  >(undefined);
 
-  const totalSize = value.reduce((acc, file) => acc + getFileSize(file), 0)
-  const size = convertBytesToMB(sizeLimit)
+  const totalSize = value.reduce((acc, file) => acc + getFileSize(file), 0);
+  const size = convertBytesToMB(sizeLimit);
 
-  function handleAlert(message: string, alert: 'warning' | 'error') {
-    setAlert({ alert, message })
-    setTimeout(() => setAlert(undefined), 5000)
+  function handleAlert(message: string, alert: "warning" | "error") {
+    setAlert({ alert, message });
+    setTimeout(() => setAlert(undefined), 5000);
   }
 
   useEffect(() => {
-    if (!isLoad) setLoadingFiles(new Set())
-  }, [isLoad])
+    if (!isLoad) setLoadingFiles(new Set());
+  }, [isLoad]);
 
   const handleFileSelect = useCallback(
     async (files: FileList | null) => {
-      if (!files || files.length === 0) return
+      if (!files || files.length === 0) return;
 
-      let fileArray = Array.from(files)
+      let fileArray = Array.from(files);
 
       if (autoLimitFiles) {
-        fileArray = fileArray.slice(0, remainingSlots)
-        const warningMessage = `Only ${remainingSlots} of ${fileArray.length} selected files will be uploaded due to the ${limit} file limit.`
-        handleAlert(warningMessage, 'warning')
-        setTimeout(() => setAlert(undefined), 5000)
+        fileArray = fileArray.slice(0, remainingSlots);
+        const warningMessage = `Only ${remainingSlots} of ${fileArray.length} selected files will be uploaded due to the ${limit} file limit.`;
+        handleAlert(warningMessage, "warning");
+        setTimeout(() => setAlert(undefined), 5000);
       } else if (files.length > limit) {
-        handleAlert(`Maximum ${limit} files allowed. Please remove some files first.`, 'error')
-        setTimeout(() => setAlert(undefined), 5000)
-        return
+        handleAlert(
+          `Maximum ${limit} files allowed. Please remove some files first.`,
+          "error"
+        );
+        setTimeout(() => setAlert(undefined), 5000);
+        return;
       }
 
       // Check size limit
       for (const file of fileArray) {
         if (file.size >= sizeLimit) {
-          const fileSizeMB = convertBytesToMB(file.size)
-          const error = new Error(`File "${file.name}" (${fileSizeMB}) exceeds the ${size} size limit`)
-          handleAlert(error.message, 'error')
-          if (handleOnChangeError) await handleOnChangeError(error)
-          return
+          const fileSizeMB = convertBytesToMB(file.size);
+          const error = new Error(
+            `File "${file.name}" (${fileSizeMB}) exceeds the ${size} size limit`
+          );
+          handleAlert(error.message, "error");
+          if (handleOnChangeError) await handleOnChangeError(error);
+          return;
         }
       }
 
       // Begin uploading: show loading state for all files
-      const loadingKeys = new Set(fileArray.map(file => `${file.name}-${Date.now()}-${Math.random()}`))
-      setLoadingFiles(prev => new Set([...prev, ...loadingKeys]))
+      const loadingKeys = new Set(
+        fileArray.map((file) => `${file.name}-${Date.now()}-${Math.random()}`)
+      );
+      setLoadingFiles((prev) => new Set([...prev, ...loadingKeys]));
 
       try {
-        const formDataArray: FormData[] = []
+        const formDataArray: FormData[] = [];
         for (const file of fileArray) {
-          const formData = new FormData()
-          formData.append('file', file)
-          formDataArray.push(formData)
+          const formData = new FormData();
+          formData.append("file", file);
+          formDataArray.push(formData);
         }
 
-        await onChange?.(formDataArray, fileArray)
+        await onChange?.(formDataArray, fileArray);
       } catch (error: any) {
-        handleAlert(error.message, 'error')
-        if (handleOnChangeError) await handleOnChangeError(error)
+        handleAlert(error.message, "error");
+        if (handleOnChangeError) await handleOnChangeError(error);
       } finally {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [autoLimitFiles, limit, sizeLimit, size]
-  )
+  );
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFileSelect(e.target.files)
-    e.target.value = '' // Reset input
-  }
+    handleFileSelect(e.target.files);
+    e.target.value = ""; // Reset input
+  };
 
   const onDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragOver(false)
-    if (!readOnly && !disabled && !isLoad) handleFileSelect(e.dataTransfer.files)
-  }
+    e.preventDefault();
+    setDragOver(false);
+    if (!readOnly && !disabled && !isLoad)
+      handleFileSelect(e.dataTransfer.files);
+  };
 
   const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    if (!readOnly && !disabled && !isLoad) setDragOver(true)
-  }
+    e.preventDefault();
+    if (!readOnly && !disabled && !isLoad) setDragOver(true);
+  };
 
   const onDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragOver(false)
-  }
+    e.preventDefault();
+    setDragOver(false);
+  };
 
-  const removeFile = async (fileToDelete: string | File | FormData, index: number) => {
+  const removeFile = async (
+    fileToDelete: string | File | FormData,
+    index: number
+  ) => {
     if (deletePrivateFile) {
       try {
-        const updatedValues = value.filter((_, i) => i !== index)
-        await deletePrivateFile(fileToDelete, updatedValues)
+        const updatedValues = value.filter((_, i) => i !== index);
+        await deletePrivateFile(fileToDelete, updatedValues);
       } catch (error) {
-        if (handleOnChangeError) await handleOnChangeError(error)
+        if (handleOnChangeError) await handleOnChangeError(error);
       }
     }
-  }
+  };
 
   const downloadFile = async (file: string | File | FormData) => {
     if (downloadPrivateFile) {
       try {
-        await downloadPrivateFile(file)
+        await downloadPrivateFile(file);
       } catch (error) {
-        if (handleOnChangeError) await handleOnChangeError(error)
+        if (handleOnChangeError) await handleOnChangeError(error);
       }
     }
-  }
+  };
 
-  const canUploadMore = !limit || value.length < limit
-  const isFieldDisabled = disabled || isLoad
-  const hasLoadingFiles = loadingFiles.size > 0
-  const remainingSlots = limit ? limit - value.length : Number.POSITIVE_INFINITY
+  const canUploadMore = !limit || value.length < limit;
+  const isFieldDisabled = disabled || isLoad;
+  const hasLoadingFiles = loadingFiles.size > 0;
+  const remainingSlots = limit
+    ? limit - value.length
+    : Number.POSITIVE_INFINITY;
 
   return (
-    <div className={twMerge('relative', classNames?.root)}>
+    <div className={twMerge("relative", classNames?.root)}>
       {/* Label */}
       {label && (
-        <div className='mb-2'>
+        <div className="mb-2">
           {required ? (
-            <span className='inline-flex gap-1 items-center'>
-              {label} <span className='text-error-main'>*</span>
+            <span className="inline-flex gap-1 items-center">
+              {label} <span className="text-error-main">*</span>
             </span>
           ) : (
             label
@@ -321,18 +397,22 @@ export default function MultipleFileUpload(props: Props) {
       {alert && (
         <div
           className={
-            alert.alert === 'warning'
-              ? 'mb-3 border-warning-dark bg-warning-light/50 p-2 flex rounded-lg gap-1'
-              : 'mb-3 border-error-dark bg-error-light/50 p-2 flex  rounded-lg gap-1'
+            alert.alert === "warning"
+              ? "mb-3 border-warning-dark bg-warning-light/50 p-2 flex rounded-lg gap-1"
+              : "mb-3 border-error-dark bg-error-light/50 p-2 flex  rounded-lg gap-1"
           }
         >
           <div>
             <IconAlertCircleTwotone color={alert.alert} fontSize={18} />
           </div>
           <Typography
-            component='div'
-            variant='caption'
-            className={alert.alert === 'warning' ? 'text-warning-dark' : 'text-error-dark'}
+            component="div"
+            variant="caption"
+            className={
+              alert.alert === "warning"
+                ? "text-warning-dark"
+                : "text-error-dark"
+            }
           >
             {alert.message}
           </Typography>
@@ -343,94 +423,141 @@ export default function MultipleFileUpload(props: Props) {
       <label
         htmlFor={id}
         className={twMerge(
-          'relative block overflow-hidden',
-          'border-2 border-dashed rounded-lg transition-colors',
+          "relative block overflow-hidden",
+          "border-2 border-dashed rounded-lg transition-colors",
           dragOver && !isFieldDisabled
-            ? 'border-primary-dark bg-primary-light/25'
-            : 'border-divider bg-secondary-light/5',
-          error && 'border-error-main',
-          disabled && 'opacity-50 cursor-not-allowed',
-          !canUploadMore && 'cursor-not-allowed',
-          'w-full min-h-[12rem] p-4',
+            ? "border-primary-dark bg-primary-light/25"
+            : "border-divider bg-secondary-light/5",
+          error && "border-error-main",
+          disabled && "opacity-50 cursor-not-allowed",
+          !canUploadMore && "cursor-not-allowed",
+          "w-full min-h-[12rem] p-4",
           classNames?.container
         )}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
       >
-        {(isLoad || hasLoadingFiles) && <CircularProgress color='primary' className='absolute top-2 right-2 z-10' />}
+        {(isLoad || hasLoadingFiles) && (
+          <CircularProgress
+            color="primary"
+            className="absolute top-2 right-2 z-10"
+          />
+        )}
 
         {/* File Display */}
-        <div className='flex flex-wrap gap-3 mb-4'>
+        <div className="flex flex-wrap gap-3 mb-4">
           {value.map((v: string | File | FormData, i: number) => {
             // For existing files, we don't show loading state since they're already uploaded
-            const isFileLoading = false
+            const isFileLoading = false;
 
-            if (typeof v === 'string') {
+            if (typeof v === "string") {
               return (
                 <div
                   className={twMerge(
-                    'text-center relative transition-all duration-300',
-                    isFileLoading && 'transform scale-105 shadow-lg shadow-blue-200 dark:shadow-blue-900/50'
+                    "text-center relative transition-all duration-300",
+                    isFileLoading &&
+                      "transform scale-105 shadow-lg shadow-blue-200 dark:shadow-blue-900/50"
                   )}
                   key={`${v}-${i}`}
                 >
-                  <DocumentString src={v ? v : ''} alt={v} isLoading={isFileLoading} />
+                  <DocumentString
+                    src={v ? v : ""}
+                    alt={v}
+                    isLoading={isFileLoading}
+                  />
                   {!isFieldDisabled && !isFileLoading && (
-                    <DownloadItem onClick={() => downloadFile(v)} disabled={isLoad} />
+                    <DownloadItem
+                      onClick={() => downloadFile(v)}
+                      disabled={isLoad}
+                    />
                   )}
                   {!(readOnly || isFieldDisabled) && !isFileLoading && (
-                    <RemoveItem onClick={() => removeFile(v, i)} disabled={isLoad} />
+                    <RemoveItem
+                      onClick={() => removeFile(v, i)}
+                      disabled={isLoad}
+                    />
                   )}
-                  {isFileLoading && <div className='absolute inset-0 bg-blue-500/10 rounded-lg animate-pulse' />}
+                  {isFileLoading && (
+                    <div className="absolute inset-0 bg-blue-500/10 rounded-lg animate-pulse" />
+                  )}
                 </div>
-              )
+              );
             }
 
-            if (v && typeof v === 'object' && 'name' in v && 'size' in v) {
+            if (v && typeof v === "object" && "name" in v && "size" in v) {
               return (
                 <div
                   className={twMerge(
-                    'text-center relative transition-all duration-300',
-                    isFileLoading && 'transform scale-105 shadow-lg shadow-blue-200 dark:shadow-blue-900/50'
+                    "text-center relative transition-all duration-300",
+                    isFileLoading &&
+                      "transform scale-105 shadow-lg shadow-blue-200 dark:shadow-blue-900/50"
                   )}
                   key={`${(v as File).name}-${i}`}
                 >
-                  <DocumentFile src={v as File} alt={(v as File).name} isLoading={isFileLoading} />
-                  {!isFileLoading && <DownloadItem onClick={() => downloadFile(v)} disabled={isFieldDisabled} />}
-                  {!(readOnly || isFieldDisabled) && !isFileLoading && (
-                    <RemoveItem onClick={() => removeFile(v, i)} disabled={isLoad} />
+                  <DocumentFile
+                    src={v as File}
+                    alt={(v as File).name}
+                    isLoading={isFileLoading}
+                  />
+                  {!isFileLoading && (
+                    <DownloadItem
+                      onClick={() => downloadFile(v)}
+                      disabled={isFieldDisabled}
+                    />
                   )}
-                  {isFileLoading && <div className='absolute inset-0 bg-blue-500/10 rounded-lg animate-pulse' />}
+                  {!(readOnly || isFieldDisabled) && !isFileLoading && (
+                    <RemoveItem
+                      onClick={() => removeFile(v, i)}
+                      disabled={isLoad}
+                    />
+                  )}
+                  {isFileLoading && (
+                    <div className="absolute inset-0 bg-blue-500/10 rounded-lg animate-pulse" />
+                  )}
                 </div>
-              )
+              );
             }
 
             if (v instanceof FormData) {
               return (
                 <div
                   className={twMerge(
-                    'text-center relative transition-all duration-300',
-                    isFileLoading && 'transform scale-105 shadow-lg shadow-blue-200 dark:shadow-blue-900/50'
+                    "text-center relative transition-all duration-300",
+                    isFileLoading &&
+                      "transform scale-105 shadow-lg shadow-blue-200 dark:shadow-blue-900/50"
                   )}
                   key={`formdata-${i}`}
                 >
                   <DocumentFormData isLoading={isFileLoading} />
-                  {!isFileLoading && <DownloadItem onClick={() => downloadFile(v)} disabled={isFieldDisabled} />}
-                  {!(readOnly || isFieldDisabled) && !isFileLoading && (
-                    <RemoveItem onClick={() => removeFile(v, i)} disabled={isLoad} />
+                  {!isFileLoading && (
+                    <DownloadItem
+                      onClick={() => downloadFile(v)}
+                      disabled={isFieldDisabled}
+                    />
                   )}
-                  {isFileLoading && <div className='absolute inset-0 bg-blue-500/10 rounded-lg animate-pulse' />}
+                  {!(readOnly || isFieldDisabled) && !isFileLoading && (
+                    <RemoveItem
+                      onClick={() => removeFile(v, i)}
+                      disabled={isLoad}
+                    />
+                  )}
+                  {isFileLoading && (
+                    <div className="absolute inset-0 bg-blue-500/10 rounded-lg animate-pulse" />
+                  )}
                 </div>
-              )
+              );
             }
 
-            return null
+            return null;
           })}
 
           {/* Show loading skeletons for files being uploaded */}
-          {Array.from(loadingFiles).map(f => (
-            <div key={f} className='text-center relative transition-all duration-300'>
+          {Array.from(loadingFiles).map((f) => (
+            <div
+              key={f}
+              className="text-center relative transition-all duration-300"
+            >
               <DocumentSkeleton />
             </div>
           ))}
@@ -441,42 +568,50 @@ export default function MultipleFileUpload(props: Props) {
           <div
             className={twMerge(
               // 'absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-50 flex items-center justify-center',
-              'cursor-pointer block',
-              isFieldDisabled && 'cursor-not-allowed'
+              "cursor-pointer block",
+              isFieldDisabled && "cursor-not-allowed"
             )}
           >
-            <div className={twMerge('flex flex-col items-center justify-center p-4 text-center text-text-secondary')}>
+            <div
+              className={twMerge(
+                "flex flex-col items-center justify-center p-4 text-center text-text-secondary"
+              )}
+            >
               <IconUpload
-                color={hasLoadingFiles ? 'primary' : undefined}
+                color={hasLoadingFiles ? "primary" : undefined}
                 fontSize={40}
-                className={twMerge('mb-3', hasLoadingFiles && 'animate-bounce')}
+                className={twMerge("mb-3", hasLoadingFiles && "animate-bounce")}
               />
-              <p className='mb-2 text-sm font-semibold'>
+              <p className="mb-2 text-sm font-semibold">
                 {isLoad
-                  ? 'Uploading...'
+                  ? "Uploading..."
                   : hasLoadingFiles
                     ? `Uploading ${loadingFiles.size} file(s)...`
-                    : 'Click to upload or drag and drop'}
+                    : "Click to upload or drag and drop"}
               </p>
-              <p className='text-xs'>All File Types</p>
-              {moreText && <p className='text-xs mt-1'>{moreText}</p>}
+              <p className="text-xs">All File Types</p>
+              {moreText && <p className="text-xs mt-1">{moreText}</p>}
               {limit && (
-                <p className='text-xs mt-1'>
+                <p className="text-xs mt-1">
                   {value.length}/{limit} files uploaded
-                  {remainingSlots < Number.POSITIVE_INFINITY && remainingSlots > 0 && (
-                    <span className='text-primary-main'> • {remainingSlots} slots remaining</span>
-                  )}
+                  {remainingSlots < Number.POSITIVE_INFINITY &&
+                    remainingSlots > 0 && (
+                      <span className="text-primary-main">
+                        {" "}
+                        • {remainingSlots} slots remaining
+                      </span>
+                    )}
                 </p>
               )}
             </div>
             <input
-              type='file'
+              type="file"
               id={id}
               onChange={onFileChange}
-              className='hidden'
+              className="hidden"
               disabled={isFieldDisabled}
               multiple={limit > 1}
-              accept='*/*'
+              accept="*/*"
             />
           </div>
         )}
@@ -486,13 +621,16 @@ export default function MultipleFileUpload(props: Props) {
           <div
             className={twMerge(
               // 'absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-50 flex items-center justify-center',
-              'flex flex-col items-center justify-center p-4 text-center text-text-secondary'
+              "flex flex-col items-center justify-center p-4 text-center text-text-secondary"
             )}
           >
-            <IconAlertCircleTwotone className='w-10 h-10 mb-3 text-warning-main' />
-            <p className='mb-2 text-sm font-semibold'>Maximum file limit reached</p>
-            <p className='text-xs'>
-              {limit} of {limit} files uploaded. Remove some files to upload more.
+            <IconAlertCircleTwotone className="w-10 h-10 mb-3 text-warning-main" />
+            <p className="mb-2 text-sm font-semibold">
+              Maximum file limit reached
+            </p>
+            <p className="text-xs">
+              {limit} of {limit} files uploaded. Remove some files to upload
+              more.
             </p>
           </div>
         )}
@@ -502,22 +640,28 @@ export default function MultipleFileUpload(props: Props) {
           <div
             className={twMerge(
               // 'absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-50 flex items-center justify-center',
-              'flex flex-col items-center justify-center p-4 text-center text-text-secondary'
+              "flex flex-col items-center justify-center p-4 text-center text-text-secondary"
             )}
           >
-            <IconFile className='w-10 h-10 mb-3' />
-            <p className='mb-2 text-sm font-semibold'>Tidak ada file yang di upload</p>
+            <IconFile className="w-10 h-10 mb-3" />
+            <p className="mb-2 text-sm font-semibold">
+              Tidak ada file yang di upload
+            </p>
           </div>
         )}
       </label>
 
       {/* Footer Info */}
-      <div className='flex justify-between items-center mt-2 px-1'>
-        <Typography component='span' variant='caption' color='error'>
+      <div className="flex justify-between items-center mt-2 px-1">
+        <Typography component="span" variant="caption" color="error">
           {error}
         </Typography>
         {!(readOnly || isFieldDisabled) && (
-          <Typography component='span' variant='caption' color={totalSize >= sizeLimit ? 'error' : 'text-secondary'}>
+          <Typography
+            component="span"
+            variant="caption"
+            color={totalSize >= sizeLimit ? "error" : "text-secondary"}
+          >
             {`Siap diupload ${convertBytesToMB(totalSize)}/${size}`}
           </Typography>
         )}
@@ -525,10 +669,10 @@ export default function MultipleFileUpload(props: Props) {
 
       {/* Progress Bar for Size Limit */}
       {!(readOnly || isFieldDisabled) && totalSize > 0 && (
-        <div className='mt-2'>
-          <Progress value={(totalSize / sizeLimit) * 100} className='h-1' />
+        <div className="mt-2">
+          <Progress value={(totalSize / sizeLimit) * 100} className="h-1" />
         </div>
       )}
     </div>
-  )
+  );
 }

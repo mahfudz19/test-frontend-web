@@ -1,29 +1,34 @@
-'use client'
-import { HTMLAttributes } from 'react'
-import BackDrop from 'src/components/utility/UI/BackDrop'
-import { twMerge } from 'tailwind-merge'
+"use client";
+import { HTMLAttributes } from "react";
+import useBackDrop from "src/components/util/UI/BackDrop";
+import { twMerge } from "tailwind-merge";
 
 interface MoreProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export type DrawerProps = HTMLAttributes<HTMLDivElement> & MoreProps
+export type DrawerProps = HTMLAttributes<HTMLDivElement> & MoreProps;
 
 function Drawer(props: DrawerProps) {
-  const { isOpen, onClose, children, className } = props
-  BackDrop(isOpen)
+  const { isOpen, onClose, children, className } = props;
+  useBackDrop(isOpen);
 
   return (
     <div>
-      {isOpen && <div className='fixed inset-0 z-40 bg-black bg-opacity-50' onClick={onClose} />}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-50"
+          onClick={onClose}
+        />
+      )}
 
       {/* Drawer */}
       <div
         className={twMerge(
-          'fixed top-0 left-0 right-0 z-50',
-          'max-h-[100dvh] bg-white transition-transform duration-300 shadow-lg',
-          isOpen ? 'translate-y-0' : '-translate-y-full',
+          "fixed top-0 left-0 right-0 z-50",
+          "max-h-[100dvh] bg-white transition-transform duration-300 shadow-lg",
+          isOpen ? "translate-y-0" : "-translate-y-full",
           className
         )}
       >
@@ -31,7 +36,7 @@ function Drawer(props: DrawerProps) {
         <div>{children}</div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Drawer
+export default Drawer;

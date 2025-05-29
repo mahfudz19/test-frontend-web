@@ -66,7 +66,7 @@ export default function Sidebar({
             window.location.href = "/auth/login";
           }}
           className={cn(
-            "flex w-full items-center gap-2 px-3 py-2 rounded hover:bg-blue-500 transition"
+            "flex w-full items-center gap-2 px-5 py-2 rounded hover:bg-blue-500 transition"
           )}
         >
           <LogOut />

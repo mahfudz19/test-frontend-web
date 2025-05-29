@@ -2,8 +2,13 @@ import { getArticleById, getArticles } from "src/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const article = await getArticleById(params.id);
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const article = await getArticleById(id);
 
   const { data: otherArticles } = await getArticles({
     category: article.category.id,

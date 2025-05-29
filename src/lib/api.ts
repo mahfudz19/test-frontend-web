@@ -1,6 +1,15 @@
+import axios from "axios";
 import { getURLParams } from "src/components/util/formats";
 import { GetArticle, ArticleInput, CategoryInput, Category } from "./type";
+
 const API_HOST = process.env.API_HOST || "https://test-fe.mysellerpintar.com";
+
+const axiosInstance = axios.create({
+  baseURL: API_HOST,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 export async function getArticles(q?: {
   page?: string;
@@ -8,66 +17,37 @@ export async function getArticles(q?: {
   limit?: string;
   search?: string;
 }) {
-  const res = await fetch(`${API_HOST}/api/articles?${getURLParams(q ?? {})}`, {
-    cache: "no-store", // tidak cache
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  const articles: GetArticle = await res.json();
-
-  return articles;
+  const res = await axiosInstance.get(`/api/articles?${getURLParams(q ?? {})}`);
+  return res.data as GetArticle;
 }
 
 export async function getArticleById(id: string) {
-  const res = await fetch(`${API_HOST}/api/articles/${id}`, {
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  if (!res.ok) {
+  const res = await axiosInstance.get(`/api/articles/${id}`);
+  if (res.status !== 200) {
     throw new Error("Failed to fetch article");
   }
-  const article = await res.json();
-  return article;
+  return res.data;
 }
 
 export async function createArticle(data: ArticleInput) {
-  const res = await fetch(`${API_HOST}/api/articles`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
+  const res = await axiosInstance.post("/api/articles", data);
+  if (res.status !== 201) {
     throw new Error("Failed to create article");
   }
-  const article = await res.json();
-  return article;
+  return res.data;
 }
 
 export async function updateArticle(id: string, data: ArticleInput) {
-  const res = await fetch(`${API_HOST}/api/articles/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
+  const res = await axiosInstance.put(`/api/articles/${id}`, data);
+  if (res.status !== 200) {
     throw new Error("Failed to update article");
   }
-  const article = await res.json();
-  return article;
+  return res.data;
 }
 
 export async function deleteArticle(id: string) {
-  const res = await fetch(`${API_HOST}/api/articles/${id}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) {
+  const res = await axiosInstance.delete(`/api/articles/${id}`);
+  if (res.status !== 200) {
     throw new Error("Failed to delete article");
   }
   return true;
@@ -78,49 +58,32 @@ export async function getCategories(q?: {
   limit?: string;
   search?: string;
 }) {
-  const res = await fetch(
-    `${API_HOST}/api/categories?${getURLParams(q ?? {})}`,
-    {
-      cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
+  const res = await axiosInstance.get(
+    `/api/categories?${getURLParams(q ?? {})}`
   );
-  if (!res.ok) {
+  if (res.status !== 200) {
     throw new Error("Failed to fetch categories");
   }
-  const data: { data: Category[]; total: number; page: number; limit: number } =
-    await res.json();
-  return data;
+  return res.data as {
+    data: Category[];
+    total: number;
+    page: number;
+    limit: number;
+  };
 }
 
 export async function createCategory(data: CategoryInput) {
-  const res = await fetch(`${API_HOST}/api/categories`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
+  const res = await axiosInstance.post("/api/categories", data);
+  if (res.status !== 201) {
     throw new Error("Failed to create category");
   }
-  const category = await res.json();
-  return category;
+  return res.data;
 }
 
 export async function updateCategory(id: string, data: CategoryInput) {
-  const res = await fetch(`${API_HOST}/api/categories/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
+  const res = await axiosInstance.put(`/api/categories/${id}`, data);
+  if (res.status !== 200) {
     throw new Error("Failed to update category");
   }
-  const category = await res.json();
-  return category;
+  return res.data;
 }

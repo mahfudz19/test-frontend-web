@@ -1,58 +1,81 @@
-import { JSX, forwardRef, InputHTMLAttributes, useState, ReactNode } from 'react'
-import { VariantProps, cva } from 'class-variance-authority'
-import { twMerge } from 'tailwind-merge'
-import IconIndeterminate from '../Icon/IconIndeterminate'
-import IconCheckmark from '../Icon/IconCheckmark'
+import {
+  JSX,
+  forwardRef,
+  InputHTMLAttributes,
+  useState,
+  ReactNode,
+} from "react";
+import { VariantProps, cva } from "class-variance-authority";
+import { twMerge } from "tailwind-merge";
+import IconIndeterminate from "../Icon/IconIndeterminate";
+import IconCheckmark from "../Icon/IconCheckmark";
 
 const variants = cva(
   [
-    'relative flex items-center justify-center transition-all duration-200 ease-in-out',
-    'rounded-md border-2 border-gray-300 dark:border-gray-400 overflow-hidden',
-    'before:absolute before:scale-0 before:transition-transform',
-    'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring'
+    "relative flex items-center justify-center transition-all duration-200 ease-in-out",
+    "rounded-md border-2 border-gray-300 dark:border-gray-400 overflow-hidden",
+    "before:absolute before:scale-0 before:transition-transform",
+    "peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring",
   ],
   {
     variants: {
       color: {
-        primary: 'peer-checked:bg-primary-main border-primary-main dark:border-primary-main transition-all',
-        secondary: 'peer-checked:bg-secondary-main border-secondary-main dark:border-secondary-main transition-all',
-        success: 'peer-checked:bg-success-main border-success-main dark:border-success-main transition-all',
-        error: 'peer-checked:bg-error-main border-error-main dark:border-error-main transition-all',
-        warning: 'peer-checked:bg-warning-main border-warning-main dark:border-warning-main transition-all'
+        primary:
+          "peer-checked:bg-primary-main border-primary-main dark:border-primary-main transition-all",
+        secondary:
+          "peer-checked:bg-secondary-main border-secondary-main dark:border-secondary-main transition-all",
+        success:
+          "peer-checked:bg-success-main border-success-main dark:border-success-main transition-all",
+        error:
+          "peer-checked:bg-error-main border-error-main dark:border-error-main transition-all",
+        warning:
+          "peer-checked:bg-warning-main border-warning-main dark:border-warning-main transition-all",
       },
-      sizes: { sm: 'w-4 h-4', md: 'w-5 h-5', lg: 'w-6 h-6' },
-      radius: { none: 'rounded-none', sm: 'rounded-sm', md: 'rounded-md', lg: 'rounded-lg', full: 'rounded-full' },
+      sizes: { sm: "w-4 h-4", md: "w-5 h-5", lg: "w-6 h-6" },
+      radius: {
+        none: "rounded-none",
+        sm: "rounded-sm",
+        md: "rounded-md",
+        lg: "rounded-lg",
+        full: "rounded-full",
+      },
       disabled: {
-        true: 'border-gray-400/30 dark:border-gray-400/30 opacity-30 dark:opacity-30 pointer-events-none',
-        false: ''
-      }
+        true: "border-gray-400/30 dark:border-gray-400/30 opacity-30 dark:opacity-30 pointer-events-none",
+        false: "",
+      },
     },
-    defaultVariants: { color: 'primary', sizes: 'md', radius: 'md' }
+    defaultVariants: { color: "primary", sizes: "md", radius: "md" },
   }
-)
+);
 
 interface MoreProps {
-  label?: string
-  helperText?: string | boolean | JSX.Element
-  error?: boolean
-  lineThrough?: boolean
-  customIcon?: JSX.Element
-  classNames?: { root?: string; checkbox?: string; label?: string; helperText?: string }
-  indeterminate?: boolean
-  children?: ReactNode | ((props: { checkbox: JSX.Element | null }) => ReactNode)
+  label?: string;
+  helperText?: string | boolean | JSX.Element;
+  error?: boolean;
+  lineThrough?: boolean;
+  customIcon?: JSX.Element;
+  classNames?: {
+    root?: string;
+    checkbox?: string;
+    label?: string;
+    helperText?: string;
+  };
+  indeterminate?: boolean;
+  children?:
+    | ReactNode
+    | ((props: { checkbox: JSX.Element | null }) => ReactNode);
 }
 
 export type CheckboxProps = VariantProps<typeof variants> &
   MoreProps &
-  Omit<InputHTMLAttributes<HTMLInputElement>, 'children'>
+  Omit<InputHTMLAttributes<HTMLInputElement>, "children">;
 
 const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>((props, ref) => {
-  let {
+  const {
     label,
     helperText,
     error,
     className,
-    color = 'primary',
     disabled,
     radius,
     lineThrough,
@@ -64,54 +87,66 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>((props, ref) => {
     defaultChecked,
     children,
     ...rest
-  } = props
+  } = props;
+  let { color = "primary" } = rest;
 
-  const [isChecked, setIsChecked] = useState<boolean>(defaultChecked || false)
+  const [isChecked, setIsChecked] = useState<boolean>(defaultChecked || false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isCurrentlyChecked = event.target.checked
+    const isCurrentlyChecked = event.target.checked;
 
     if (checked === undefined) {
-      setIsChecked(isCurrentlyChecked)
+      setIsChecked(isCurrentlyChecked);
     }
 
-    onChange?.(event)
-  }
+    onChange?.(event);
+  };
 
-  if (error) color = 'error'
+  if (error) color = "error";
 
-  const isIconChecked = checked !== undefined ? checked : isChecked
+  const isIconChecked = checked !== undefined ? checked : isChecked;
 
   const renderIcon = () => {
-    if (indeterminate && !isIconChecked) return <IconIndeterminate color='white' />
-    if (isIconChecked) return customIcon || <IconCheckmark color='white' />
-    return null
-  }
+    if (indeterminate && !isIconChecked)
+      return <IconIndeterminate color="white" />;
+    if (isIconChecked) return customIcon || <IconCheckmark color="white" />;
+    return null;
+  };
 
   const getCheckboxStyles = () => {
     return twMerge(
-      variants({ color: isIconChecked ? color : null, sizes, radius, disabled }),
+      variants({
+        color: isIconChecked ? color : null,
+        sizes,
+        radius,
+        disabled,
+      }),
       indeterminate && `bg-${color}-main border-${color}-main`,
-      error && 'border-error-main dark:border-error-main ',
-      disabled && isIconChecked ? 'bg-gray-400' : '',
+      error && "border-error-main dark:border-error-main ",
+      disabled && isIconChecked ? "bg-gray-400" : "",
       className
-    )
-  }
+    );
+  };
 
   return (
-    <label className={twMerge('inline-flex items-center cursor-pointer group', disabled && 'cursor-not-allowed')}>
+    <label
+      className={twMerge(
+        "inline-flex items-center cursor-pointer group",
+        disabled && "cursor-not-allowed"
+      )}
+    >
       <input
-        type='checkbox'
-        className='sr-only peer'
+        type="checkbox"
+        className="sr-only peer"
         disabled={disabled}
         ref={ref}
         {...rest}
         checked={checked !== undefined ? checked : isChecked}
         onChange={handleChange}
       />
-      {typeof children === 'function' ? (
+      {typeof children === "function" ? (
         children({
-          checkbox: <div className={getCheckboxStyles()}>{renderIcon()}</div>
+          checkbox: <div className={getCheckboxStyles()}>{renderIcon()}</div>,
         })
       ) : (
         <div className={getCheckboxStyles()}>{renderIcon()}</div>
@@ -121,23 +156,30 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>((props, ref) => {
           {label && (
             <span
               className={twMerge(
-                'inline-flex ml-2 cursor-pointer transition-all',
-                disabled ? 'pointer-events-none' : undefined,
-                lineThrough && 'line-through text-gray-500'
+                "inline-flex ml-2 cursor-pointer transition-all",
+                disabled ? "pointer-events-none" : undefined,
+                lineThrough && "line-through text-gray-500"
               )}
             >
               {label}
             </span>
           )}
           {helperText && (
-            <p className={twMerge('text-xs mt-1 ml-2', error ? 'text-error-main ' : 'text-gray-500')}>{helperText}</p>
+            <p
+              className={twMerge(
+                "text-xs mt-1 ml-2",
+                error ? "text-error-main " : "text-gray-500"
+              )}
+            >
+              {helperText}
+            </p>
           )}
         </>
       )}
     </label>
-  )
-})
+  );
+});
 
-Checkbox.displayName = 'Checkbox'
+Checkbox.displayName = "Checkbox";
 
-export default Checkbox
+export default Checkbox;
