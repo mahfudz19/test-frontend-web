@@ -6,6 +6,10 @@ import { registerUser } from "src/lib/auth"; // Fungsi request ke API Register
 import Image from "next/image";
 import Input from "src/components/ui/Input";
 import Button from "src/components/ui/Button";
+import { useState } from "react";
+import IconButton from "src/components/ui/IconButton";
+import IconEye from "src/components/ui/Icon/IconEye";
+import IconEyeClose from "src/components/ui/Icon/IconEyeClose";
 
 type FormData = {
   name: string;
@@ -15,6 +19,7 @@ type FormData = {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -97,9 +102,21 @@ export default function RegisterPage() {
                   message: "Password minimal 6 karakter",
                 },
               })}
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               variant="bordered"
+              endAdornment={
+                <IconButton
+                  sizes="small"
+                  variant="text"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPassword((p) => !p);
+                  }}
+                >
+                  {showPassword ? <IconEye /> : <IconEyeClose />}
+                </IconButton>
+              }
               fullWidth
               error={Boolean(errors.email && touchedFields.email)}
               helperText={errors.email && String(errors.email.message)}
