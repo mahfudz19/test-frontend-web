@@ -3,6 +3,9 @@
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { registerUser } from "src/lib/auth"; // Fungsi request ke API Register
+import Image from "next/image";
+import Input from "src/components/ui/Input";
+import Button from "src/components/ui/Button";
 
 type FormData = {
   name: string;
@@ -16,7 +19,7 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
@@ -32,59 +35,82 @@ export default function RegisterPage() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-md mx-auto mt-10 space-y-4"
-    >
-      <div>
-        <input
-          {...register("name", { required: "Nama wajib diisi" })}
-          placeholder="Nama"
-          className="border p-2 w-full"
+    <div className="flex flex-col md:flex-row h-screen">
+      {/* Gambar ilustrasi */}
+      <div className="hidden md:flex w-1/2 items-center justify-center bg-gray-100">
+        <Image
+          src="/images/undraw_sign-up_z2ku.svg" // Ganti dengan path sesuai
+          alt="Login Illustration"
+          width={500}
+          height={500}
+          className="object-contain"
         />
-        {errors.name && (
-          <p className="text-red-500 text-sm">{errors.name.message}</p>
-        )}
       </div>
+      {/* Form */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full max-w-md space-y-6"
+        >
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Selamat Datang</h1>
+            <p className="text-gray-500">Silakan daftar untuk melanjutkan</p>
+          </div>
 
-      <div>
-        <input
-          {...register("email", {
-            required: "Email wajib diisi",
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Format email tidak valid",
-            },
-          })}
-          placeholder="Email"
-          className="border p-2 w-full"
-        />
-        {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email.message}</p>
-        )}
+          <div>
+            <Input
+              {...register("name", { required: "Nama wajib diisi" })}
+              placeholder="Nama"
+              variant="bordered"
+              fullWidth
+              error={Boolean(errors.name && touchedFields.name)}
+              helperText={errors.name && String(errors.name.message)}
+            />
+          </div>
+
+          <div>
+            <Input
+              {...register("email", {
+                required: "Email wajib diisi",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Format email tidak valid",
+                },
+              })}
+              placeholder="Email"
+              variant="bordered"
+              fullWidth
+              error={Boolean(errors.email && touchedFields.email)}
+              helperText={errors.email && String(errors.email.message)}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Input
+              {...register("password", {
+                required: "Password wajib diisi",
+                minLength: {
+                  value: 6,
+                  message: "Password minimal 6 karakter",
+                },
+              })}
+              type="password"
+              placeholder="Password"
+              variant="bordered"
+              fullWidth
+              error={Boolean(errors.email && touchedFields.email)}
+              helperText={errors.email && String(errors.email.message)}
+            />
+          </div>
+
+          <Button fullWidth sizes="large" type="submit">
+            Register
+          </Button>
+        </form>
       </div>
-
-      <div>
-        <input
-          {...register("password", {
-            required: "Password wajib diisi",
-            minLength: {
-              value: 6,
-              message: "Password minimal 6 karakter",
-            },
-          })}
-          type="password"
-          placeholder="Password"
-          className="border p-2 w-full"
-        />
-        {errors.password && (
-          <p className="text-red-500 text-sm">{errors.password.message}</p>
-        )}
-      </div>
-
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 w-full">
-        Register
-      </button>
-    </form>
+    </div>
   );
 }

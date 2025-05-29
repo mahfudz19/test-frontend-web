@@ -77,7 +77,7 @@ function Jumbotron() {
     <section
       className="relative bg-blue-700 text-white py-16 px-6 md:px-16 lg:px-32"
       style={{
-        backgroundImage: "url(/jumbotron-bg.png)",
+        backgroundImage: "url(/images/jumbotron-bg.png)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundBlendMode: "multiply",
