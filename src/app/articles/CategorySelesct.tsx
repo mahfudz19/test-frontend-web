@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import CircularProgress from "src/components/ui/CircularProgress";
 import Select from "src/components/ui/Select";
 import Option from "src/components/ui/Select/Option";
+import { GetCategory } from "src/lib/type";
 
 const Category = ({
   handleChangeClient,
@@ -13,28 +14,16 @@ const Category = ({
   handleChangeClient?: (value: string) => void;
   variant?: "default" | "bordered" | "underlined";
 }) => {
-  type ICategory = {
-    data: {
-      id: string;
-      userId: string;
-      name: string;
-      createdAt: string;
-      updatedAt: string;
-    }[];
-    totalData: number;
-    currentPage: number;
-    totalPages: number;
-  };
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [categories, setCategories] = useState<ICategory["data"]>([]);
+  const [categories, setCategories] = useState<GetCategory["data"]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
         setLoading(true);
-        const res = await axios.get<ICategory>(
+        const res = await axios.get<GetCategory>(
           `https://test-fe.mysellerpintar.com/api/categories?limit=999`
         );
         setCategories(res.data.data);

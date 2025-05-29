@@ -370,7 +370,7 @@ function AutoComplete<T extends WithId>(props: AutoCompleteProps<T>) {
           className=""
           classNames={{
             input: "cursor-text",
-            container: "flex flex-wrap gap-y-0 pt-0.5 pr-12",
+            container: "flex flex-wrap gap-y-0 pt-0.5 pr-3",
             containerInput: multiple ? "w-auto" : undefined,
           }}
           startAdornment={
@@ -439,7 +439,7 @@ function AutoComplete<T extends WithId>(props: AutoCompleteProps<T>) {
                     <CircularProgress size={16} color="primary" />
                   </div>
                 )}
-                <div className="flex items-center justify-center border-l-2 border-divider h-full pl-1">
+                <div className="flex items-center justify-center border-l-2 border-gray-300 h-full pl-1">
                   <IconDownLine fontSize={18} />
                 </div>
               </div>
@@ -490,7 +490,7 @@ function AutoComplete<T extends WithId>(props: AutoCompleteProps<T>) {
         zIndex={50}
         anchor="bottom"
         followWidthAnchor
-        className="custom-popover duration-150 border border-divider overflow-hidden"
+        className="custom-popover duration-150 border border-gray-300 overflow-hidden"
         onlyShowUpOrDown
         noLastFocusedElement
       >
@@ -510,8 +510,8 @@ function AutoComplete<T extends WithId>(props: AutoCompleteProps<T>) {
                 highlightedIndex === index
                   ? isDisabled
                     ? "bg-gray-100 dark:bg-gray-800"
-                    : "ring-2 ring-offset-1 ring-primary-main bg-secondary-light/25"
-                  : "hover:bg-secondary-light/25  hover:outline-none",
+                    : "ring-2 ring-offset-1 ring-teal-900 bg-gray-600/25"
+                  : "hover:bg-gray-600/25  hover:outline-none",
                 isSelected &&
                   renderOption &&
                   "justify-between after:content-['✓'] after:block"

@@ -43,3 +43,16 @@ export interface CategoryInput {
   userId: string;
   name: string;
 }
+
+export type GetCategory = {
+  data: {
+    id: string;
+    userId: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+  totalData: number;
+  currentPage: number;
+  totalPages: number;
+};

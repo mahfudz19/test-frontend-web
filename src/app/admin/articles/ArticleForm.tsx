@@ -1,11 +1,95 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Control, Controller, useForm } from "react-hook-form";
 import RichText from "src/components/RichText";
+import AutoComplete from "src/components/ui/Autocomplete";
 import Button from "src/components/ui/Button";
 import Input from "src/components/ui/Input";
-import { ArticleInput } from "src/lib/type";
+import Skeleton from "src/components/ui/Skeleton";
+import { ArticleInput, GetCategory } from "src/lib/type";
 import { z } from "zod";
+
+const CategoriesField = ({
+  control,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: Control<ArticleInput, any, ArticleInput>;
+}) => {
+  const [categories, setCategories] = useState<GetCategory["data"]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get<GetCategory>(
+          `https://test-fe.mysellerpintar.com/api/categories?limit=999`
+        );
+        setCategories(res.data.data);
+      } catch (err) {
+        console.error("Gagal fetch kategori", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  if (loading && categories.length === 0) {
+    return (
+      <Skeleton variant="rounded" height={40} width={"100%"} className="my-4" />
+    );
+  }
+
+  const categoryId = categories.map((v) => ({ _id: v.id, ...v }));
+
+  return (
+    <Controller
+      name="categoryId"
+      control={control}
+      render={({ field, fieldState }) => {
+        const currentValue = categoryId.find((v) => v._id === field.value);
+
+        // Handle deleted value
+        const options = [...categoryId];
+        if (field.value && !currentValue) {
+          options.push({
+            _id: `${field.value}`,
+            name: `Dihapus oleh NeoFeeder`,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any);
+        }
+
+        return (
+          <AutoComplete
+            id="categoryId"
+            name="categoryId"
+            fullWidth
+            margin="normal"
+            variant="bordered"
+            required
+            field={currentValue}
+            setFieldValue={(v) => {
+              field.onChange(!Array.isArray(v) ? v?._id : "");
+            }}
+            onBlur={field.onBlur}
+            options={options}
+            isClearable
+            renderOption={(option, props) => (
+              <li {...props} key={option._id}>
+                {option.name}
+              </li>
+            )}
+            error={!!fieldState.error}
+            helperText={fieldState.error?.message}
+          />
+        );
+      }}
+    />
+  );
+};
 
 const articleFormSchema = z.object({
   userId: z.string().min(1, "User ID wajib diisi"),
@@ -31,6 +115,7 @@ export default function ArticleForm({
     handleSubmit,
     setError,
     setValue,
+    control,
     formState: { errors, touchedFields },
     getValues,
   } = useForm<ArticleInput>({ defaultValues, mode: "onBlur" });
@@ -71,15 +156,7 @@ export default function ArticleForm({
         <label className="block mb-1 font-semibold" htmlFor="categoryId">
           Category ID
         </label>
-        <Input
-          type="text"
-          id="categoryId"
-          {...register("categoryId")}
-          variant="bordered"
-          fullWidth
-          error={Boolean(errors.userId && touchedFields.userId)}
-          helperText={errors.userId && String(errors.userId.message)}
-        />
+        <CategoriesField control={control} />
       </div>
 
       {/* title */}
