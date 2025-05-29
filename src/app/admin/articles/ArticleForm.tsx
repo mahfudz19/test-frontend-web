@@ -67,7 +67,6 @@ const CategoriesField = ({
             id="categoryId"
             name="categoryId"
             fullWidth
-            margin="normal"
             variant="bordered"
             required
             field={currentValue}
