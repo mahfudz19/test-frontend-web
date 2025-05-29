@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getURLParams } from "src/components/util/formats";
-import { GetArticle, ArticleInput, CategoryInput, Category } from "./type";
+import { ArticleInput, Category, CategoryInput, GetArticle } from "./type";
 
 const API_HOST = process.env.API_HOST || "https://test-fe.mysellerpintar.com";
 
@@ -30,6 +30,7 @@ export async function getArticleById(id: string) {
 }
 
 export async function createArticle(data: ArticleInput) {
+  console.log(data);
   const res = await axiosInstance.post("/api/articles", data);
   if (res.status !== 201) {
     throw new Error("Failed to create article");

@@ -93,7 +93,7 @@ const CategoriesField = ({
 };
 
 const articleFormSchema = z.object({
-  userId: z.string().min(1, "User ID wajib diisi"),
+  userId: z.string().optional().or(z.literal("")),
   categoryId: z.string().min(1, "Category ID wajib diisi"),
   title: z.string().min(1, "Title wajib diisi"),
   content: z.string().min(1, "Content wajib diisi"),
@@ -139,7 +139,7 @@ export default function ArticleForm({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleSave = (dataUrl: string) => {
-    console.log(dataUrl);
+    setValue("imageUrl", dataUrl, { shouldDirty: true });
     setIsDialogOpen(false);
   };
 
@@ -215,7 +215,7 @@ export default function ArticleForm({
             Reset
           </Button>
           <Button type="submit">
-            {modalMode === "create" ? "Create" : "Update"}
+            {modalMode === "create" ? "Create" : "Update"} a
           </Button>
         </div>
       </form>

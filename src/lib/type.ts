@@ -32,7 +32,7 @@ export interface GetArticle {
 }
 
 export interface ArticleInput {
-  userId: string;
+  userId?: string;
   categoryId: string;
   title: string;
   content: string;

@@ -43,7 +43,6 @@ export function ImageEditorModal({
     width: 0,
     height: 0,
   });
-  console.log({ image });
 
   const imageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
