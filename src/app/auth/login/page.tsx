@@ -20,11 +20,15 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     try {
       const res = await login(data);
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("role", res.role);
+      document.cookie = `token=${res.token}; path=/`;
+      document.cookie = `role=${res.role}; path=/`;
       router.push(res.role === "admin" ? "/admin/articles" : "/articles");
-    } catch {
-      alert("err.message");
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert("An unknown error occurred");
+      }
     }
   };
 
