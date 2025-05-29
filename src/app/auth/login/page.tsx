@@ -35,7 +35,8 @@ export default function LoginPage() {
     register,
     handleSubmit,
     setError,
-    formState: { errors, touchedFields },
+    setValue,
+    formState: { errors, isSubmitting },
     getValues,
   } = useForm<FormData>({
     mode: "onBlur",
@@ -95,7 +96,7 @@ export default function LoginPage() {
               placeholder="Email"
               variant="bordered"
               fullWidth
-              error={Boolean(errors.email && touchedFields.email)}
+              error={Boolean(errors.email)}
               helperText={errors.email && String(errors.email.message)}
             />
           </div>
@@ -119,12 +120,18 @@ export default function LoginPage() {
                   {showPassword ? <IconEye /> : <IconEyeClose />}
                 </IconButton>
               }
-              error={Boolean(errors.password && touchedFields.password)}
+              error={Boolean(errors.password)}
               helperText={errors.password && String(errors.password.message)}
             />
           </div>
 
-          <Button type="submit" fullWidth sizes="large">
+          <Button
+            type="submit"
+            fullWidth
+            sizes="large"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          >
             Login
           </Button>
         </form>
@@ -156,17 +163,9 @@ export default function LoginPage() {
                 <Button
                   type="button"
                   onClick={() => {
-                    // Autofill email & password
-                    const { email, password } = user;
-                    const inputs = document.querySelectorAll("input");
-                    if (inputs[0]) inputs[0].value = email;
-                    if (inputs[1]) inputs[1].value = password;
-                    inputs[0].dispatchEvent(
-                      new Event("input", { bubbles: true })
-                    );
-                    inputs[1].dispatchEvent(
-                      new Event("input", { bubbles: true })
-                    );
+                    // Autofill email & password using setValue from useForm
+                    setValue("email", user.email);
+                    setValue("password", user.password);
                   }}
                   sizes="small"
                   className="rounded"

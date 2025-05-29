@@ -154,7 +154,8 @@ const Content = ({ children, classNames, selected }: ContentProps) => {
 };
 
 const MenuItem = forwardRef<HTMLLIElement, MenuItemProps>(
-  (props: MenuItemProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (props: MenuItemProps, _) => {
     const {
       variant,
       className,

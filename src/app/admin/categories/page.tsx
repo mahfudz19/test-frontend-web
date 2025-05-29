@@ -156,7 +156,7 @@ const AdminCategoriesPage = () => {
           Total Categories: {totalcategory}
         </Typography>
 
-        <div className="p-4 flex gap-4">
+        <div className="p-4 flex flex-col sm:flex-row gap-4">
           <div className="flex-1 flex gap-4">
             <Input
               type="text"

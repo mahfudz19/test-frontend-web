@@ -113,7 +113,7 @@ const AdminArticlesPage = () => {
             Total Aricles: {totalArticle}
           </Typography>
 
-          <div className="p-4 flex gap-4">
+          <div className="p-4 flex flex-col sm:flex-row gap-4">
             <div className="flex-1 flex gap-4">
               <div className="w-36">
                 <Category
