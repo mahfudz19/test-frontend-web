@@ -5,8 +5,12 @@ import unresetStyleTailwind from "src/components/ui/PerseComponent/unreset.modul
 import { ComponentProps } from "react";
 import Typography from "src/components/ui/Typograph";
 import { twMerge } from "tailwind-merge";
+import Skeleton from "./ui/Skeleton";
 
-const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
+const JoditEditor = dynamic(() => import("jodit-react"), {
+  ssr: false,
+  loading: () => <Skeleton height={442} width="100%" />,
+});
 
 const copyStringToClipboard = function (str: string) {
   const el = document.createElement("textarea");
@@ -229,7 +233,7 @@ interface Props extends ComponentProps<typeof JoditEditor> {
   readOnly?: boolean;
 }
 
-export default function RichText(props: Props) {
+function RichText(props: Props) {
   const { error, classNames, readOnly, remmoveButton = [], ...rest } = props;
   if (remmoveButton.length > 0) {
     editorConfig.buttons = editorConfig.buttons.filter(
@@ -269,3 +273,8 @@ export default function RichText(props: Props) {
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(RichText), {
+  ssr: false,
+  loading: () => <Skeleton height={442} width="100%" />,
+});

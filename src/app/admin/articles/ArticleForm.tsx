@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Control, Controller, useForm } from "react-hook-form";
 import RichText from "src/components/RichText";
@@ -10,6 +9,7 @@ import Dialog from "src/components/ui/Dialog";
 import ImageEditor, { ImageEditorModal } from "src/components/ui/ImageEditor";
 import Input from "src/components/ui/Input";
 import Skeleton from "src/components/ui/Skeleton";
+import { getCategories } from "src/lib/api";
 import { ArticleInput, GetCategory } from "src/lib/type";
 import { z } from "zod";
 
@@ -26,10 +26,8 @@ const CategoriesField = ({
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const res = await axios.get<GetCategory>(
-          `https://test-fe.mysellerpintar.com/api/categories?limit=999`
-        );
-        setCategories(res.data.data);
+        const { data } = await getCategories({ limit: "999" });
+        setCategories(data);
       } catch (err) {
         console.error("Gagal fetch kategori", err);
       } finally {
@@ -180,6 +178,7 @@ export default function ArticleForm({
           </label>
           <RichText
             id="content"
+            remmoveButton={["fullsize"]}
             onChange={(val) => setValue("content", val, { shouldDirty: true })}
             error={
               Boolean(errors.content && touchedFields.content)
@@ -197,7 +196,7 @@ export default function ArticleForm({
           <ImageEditor
             width={862}
             height={343}
-            shape="square"
+            shape="rounded"
             image={selectedImage}
             onImageSelect={(imageData) => {
               setValue("imageUrl", imageData, { shouldDirty: true });
@@ -208,10 +207,15 @@ export default function ArticleForm({
 
         {/* buttons */}
         <div className="flex justify-end space-x-2">
-          <Button type="button" variant="text" color="error" onClick={onClose}>
+          <Button
+            type="button"
+            variant="outlined"
+            color="error"
+            onClick={onClose}
+          >
             Cancel
           </Button>
-          <Button type="reset" variant="text" color="warning">
+          <Button type="reset" variant="outlined" color="warning">
             Reset
           </Button>
           <Button type="submit">

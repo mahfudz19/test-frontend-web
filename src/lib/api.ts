@@ -1,14 +1,12 @@
 import axios from "axios";
 import { getURLParams } from "src/components/util/formats";
-import { ArticleInput, Category, CategoryInput, GetArticle } from "./type";
+import { ArticleInput, CategoryInput, GetArticle, GetCategory } from "./type";
 
 const API_HOST = process.env.API_HOST || "https://test-fe.mysellerpintar.com";
 
 const axiosInstance = axios.create({
   baseURL: API_HOST,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
 });
 
 export async function getArticles(q?: {
@@ -30,7 +28,7 @@ export async function getArticleById(id: string) {
 }
 
 export async function createArticle(data: ArticleInput) {
-  console.log(data);
+  console.log({ data });
   const res = await axiosInstance.post("/api/articles", data);
   if (res.status !== 201) {
     throw new Error("Failed to create article");
@@ -59,18 +57,13 @@ export async function getCategories(q?: {
   limit?: string;
   search?: string;
 }) {
-  const res = await axiosInstance.get(
+  const { data, status } = await axiosInstance.get<GetCategory>(
     `/api/categories?${getURLParams(q ?? {})}`
   );
-  if (res.status !== 200) {
+  if (status !== 200) {
     throw new Error("Failed to fetch categories");
   }
-  return res.data as {
-    data: Category[];
-    total: number;
-    page: number;
-    limit: number;
-  };
+  return data;
 }
 
 export async function createCategory(data: CategoryInput) {

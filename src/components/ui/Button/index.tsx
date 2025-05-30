@@ -26,8 +26,8 @@ const disabledClass = [
 ];
 
 const interactionClass = [
-  "hover:scale-[1.03]",
   "outline-none",
+  "hover:scale-[1.03]",
   "active:scale-95",
   "hover:shadow-md",
 ];
@@ -35,7 +35,7 @@ const interactionClass = [
 const containedVariant = cva(
   [
     ...baseClass,
-    ...interactionClass,
+    ...interactionClass.splice(0),
     "shadow",
     ...disabledClass,
     "text-white",
@@ -79,8 +79,8 @@ const outlinedVariant = cva(
     ...baseClass,
     ...interactionClass,
     "shadow",
-    "outline-2",
     "outline",
+    "outline-2",
     "-outline-offset-1",
     ...disabledClass,
     // focus

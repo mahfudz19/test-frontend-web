@@ -375,13 +375,14 @@ export function ImageEditorModal({
               </div>
             </div>
             <Slider
-              value={[scale * 100]}
+              value={scale * 100}
               min={getMinScale() * 100}
               max={300}
               step={1}
               onChange={(value) => {
-                const arr = Array.isArray(value) ? value : [value];
-                const newScale = arr[0] / 100;
+                const numericValue =
+                  typeof value === "number" ? value : Number(value);
+                const newScale = numericValue / 100;
                 setScale(newScale);
                 setPosition(constrainPosition(position, newScale));
               }}
@@ -496,11 +497,9 @@ export default function ImageEditor(props: ImageEditorProps) {
     <div className="flex flex-col items-center w-full max-w-md mx-auto">
       {/* Upload area */}
       <div
-        className={`relative overflow-hidden border-2 p-4 ${
-          isDragOver
-            ? "border-primary-main bg-secondary-main/25"
-            : "border-divider"
-        } mb-4 ${shape === "circle" ? "rounded-full" : shape === "rounded" ? "rounded-lg" : ""} cursor-pointer hover:border-primary-main transition-colors`}
+        className={`relative overflow-hidden border-2 border-gray-300 p-4 ${
+          isDragOver ? "border-blue-600 bg-gray-600/25" : "border-divider"
+        } mb-4 ${shape === "circle" ? "rounded-full" : shape === "rounded" ? "rounded-lg" : ""} cursor-pointer hover:border-blue-600 transition-colors`}
         style={{ width: `${width}px`, height: `${height}px` }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}

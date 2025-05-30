@@ -1,10 +1,10 @@
 "use client";
-import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import CircularProgress from "src/components/ui/CircularProgress";
 import Select from "src/components/ui/Select";
 import Option from "src/components/ui/Select/Option";
+import { getCategories } from "src/lib/api";
 import { GetCategory } from "src/lib/type";
 
 const Category = ({
@@ -23,10 +23,8 @@ const Category = ({
     const fetchArticles = async () => {
       try {
         setLoading(true);
-        const res = await axios.get<GetCategory>(
-          `https://test-fe.mysellerpintar.com/api/categories?limit=999`
-        );
-        setCategories(res.data.data);
+        const res = await getCategories({ limit: "999" });
+        setCategories(res.data);
       } catch (err) {
         console.error("Gagal fetch artikel", err);
       } finally {

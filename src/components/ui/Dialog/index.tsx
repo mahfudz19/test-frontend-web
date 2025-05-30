@@ -176,7 +176,7 @@ const Dialog = (props: DialogProps) => {
               color="error"
               variant="text"
               sizes="small"
-              className="absolute top-2 right-2 z-10 p-0.5 bg-error-main/50"
+              className="absolute top-2 right-2 z-10 p-0.5 bg-red-300/50"
               onClick={onClose}
               noRipple
             >

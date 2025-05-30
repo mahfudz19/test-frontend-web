@@ -56,8 +56,8 @@ const AdminCategoriesPage = () => {
         search: search || undefined,
       });
       setCategories(data.data);
-      setTotalCategory(data.total);
-      setTotalPages(Math.ceil(data.total / data.limit));
+      setTotalCategory(data.totalData);
+      setTotalPages(Math.ceil(data.totalData / 10));
     } catch (error) {
       console.error(error);
     } finally {
