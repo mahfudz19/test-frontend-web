@@ -210,6 +210,7 @@ const Thumb = memo<ThumbProps>((props) => {
           isFocused && "ring-2"
         )}
         style={{
+          touchAction: "none",
           [orientation === "vertical" ? "bottom" : "left"]:
             `${orientation === "vertical" ? percentage - 12 : percentage}%`,
           [orientation === "vertical" ? "left" : "top"]: "50%",
@@ -463,6 +464,7 @@ const Slider: React.FC<SliderProps> = memo((props) => {
       };
 
       const handleTouchMove = (e: TouchEvent) => {
+        e.preventDefault();
         if (!sliderRef.current) return;
         const rect = sliderRef.current.getBoundingClientRect();
         const touch = e.touches[0];
@@ -484,8 +486,10 @@ const Slider: React.FC<SliderProps> = memo((props) => {
 
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
-      document.addEventListener("touchmove", handleTouchMove);
-      document.addEventListener("touchend", handleTouchEnd);
+      document.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+      document.addEventListener("touchend", handleTouchEnd, { passive: false });
     },
     [
       disabled,
